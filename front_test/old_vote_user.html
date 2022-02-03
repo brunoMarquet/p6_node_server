@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+  <head>
+   
+
+    
+     <body>
+       <h2>Brouillon du p6 </h2>
+       <h3>Utilisateurs </h3>
+     
+        <div id= "info_user"></div>
+        <hr>
+        <div id="choixSauce"></div>
+        
+       <div id= "actu_sauce"></div>
+      
+       <div id= "leMessage"></div>
+  </body>
+  <style>
+    button{
+      background-color: blanchedalmond;
+    }
+    .creer{
+      background-color: rgb(212, 179, 30);
+    }
+    .bt_3{
+      background-color: rgb(212, 88, 30);
+    }
+  </style>
+
+  <script>
+    /*__________________
+____ initialiser les  objets
+____________________*/
+    const mesUsers = ["Anne", "Chloé", "Léa","Claire","Tito","léon"];
+    let userCourant="";
+    let sauceCourante="";
+    let idsauce=-1;
+    let message="";
+
+    class user{
+     constructor(name, auteur) {
+       this.name = name;}
+    }
+
+    
+    class Sauce {
+constructor(name, auteur) {
+
+ this.name = name;
+ this.auteur = auteur;
+ this.note=0;
+ this.price=0;//la valeur modifiable
+ this.idisLike =[];
+ this.iLike =[];
+}
+}
+let lesSauces=[];
+let a= new Sauce("tomate",mesUsers[1]);
+lesSauces.push(a);
+a= new Sauce("oignon",mesUsers[1]);
+lesSauces.push(a);
+a= new Sauce("poivron",mesUsers[0]);
+lesSauces.push(a);
+a= new Sauce("coulis tomate",mesUsers[2]);
+lesSauces.push(a);
+a= new Sauce("anchois",mesUsers[0]);
+lesSauces.push(a);
+a= new Sauce("spicy radis",mesUsers[0]);
+lesSauces.push(a);
+a= new Sauce(" à ail",mesUsers[3]);
+lesSauces.push(a);
+a= new Sauce("spicy Piment",mesUsers[4]);
+lesSauces.push(a);
+/*__________________
+____"ecriture initiale""
+____________________*/
+
+texte="<select onchange='editerUser(this.value)'>";
+for (let i=0 ;i<mesUsers.length;i++){
+  texte+=` <option value="${i}">${mesUsers[i]}</option>`;
+}
+texte+=` </select>`;
+
+for (let i=0 ;i<mesUsers.length;i++){
+  texte+=`<button  onclick="editerUser(${i})">${mesUsers[i]} </button>`;
+}
+
+document.getElementById("info_user").innerHTML=texte;
+
+/*__________________
+____ editerUser
+____________________*/
+function editerUser(num){
+  userCourant=mesUsers[num];
+let tt="<h3>user courant : "+userCourant+"</h3>";
+//recup sc crées par user..
+
+for (let i=0 ;i<lesSauces.length;i++){
+
+//let class=(lesSauces[i].auteur==userCourant)?"":"";
+
+ let styl="";
+   if(lesSauces[i].auteur==userCourant){styl="class='creer'";} 
+ tt+=`<button ${styl} onclick="showSauce(${i})">${lesSauces[i].name} </button>`;
+  
+}
+document.getElementById("choixSauce").innerHTML=tt+"<hr>";
+}
+/*__________________
+____ showSauce
+____________________*/
+
+function showSauce(num){
+  idsauce=num;
+  sauceCourante=lesSauces[idsauce];
+  let texte="";
+  let tt_like="";
+  console.log(sauceCourante.name +" , crée par :"+sauceCourante.auteur)
+
+if (sauceCourante.iLike.length!=0){
+  for (let j=0 ;j<sauceCourante.iLike.length;j++){
+  tt_like+=sauceCourante.iLike[j]+",";
+}}
+
+let tt_dislike="";
+
+if (sauceCourante.idisLike.length!=0){
+  for (let j=0 ;j<sauceCourante.idisLike.length;j++){
+    tt_dislike+=sauceCourante.idisLike[j]+",";
+}}
+
+texte+=`<h2>Sauce : ${sauceCourante.name}</h2>, 
+<h4>créée par ${sauceCourante.auteur}.</h4>
+<h4> note: ${sauceCourante.note}</h4>
+ils !'aiment :  ${tt_like}<br>
+ils !a détestent :  ${tt_dislike}<br>
+<button id="bt1" onclick="aimer(1)">J'aime</button><br><br>
+  <button  id="bt2" onclick="aimer(-1)">Je déteste</button><br><br>
+ <button  id="bt2" onclick="modifier()">modifier le </button>
+   prix : <input type ="integer" id ="newPrice" value="${sauceCourante.price}"/>
+   <br>  ! modifiable si vous avez crée la sauce<hr>` ;
+
+document.getElementById("actu_sauce").innerHTML=texte+"<hr>";
+}
+/*__________________
+____ modifier
+____________________*/
+
+function modifier(){
+  if (userCourant==sauceCourante.auteur){
+    let nprix=document.getElementById("newPrice").value;
+    sauceCourante.price=nprix;
+    lesSauces[idsauce]=sauceCourante;
+message="vous avez bien modifié le prix";
+   
+  }
+  else{message="vous n'avez pas les droits!";
+  document.getElementById("newPrice").value=sauceCourante.price;}
+
+  document.getElementById("leMessage").innerHTML=message+"<br>";
+
+
+}
+/*__________________
+____ aimer()
+____________________*/
+function aimer(nbe){
+   message="ttt";
+  const jaime=(sauceCourante.iLike).indexOf(userCourant);
+  const jaimePas=(sauceCourante.idisLike).indexOf(userCourant);
+
+   if (nbe==1){
+    message="aime; "+jaime+"pas: "+jaimePas;
+
+    if (jaime!=-1){
+      message="vous avez deja voté";}
+    if (jaime==-1 && jaimePas!=-1 ){
+      message="vous detestiez, maintenant vous etes neutre";
+      sauceCourante.idisLike.splice(jaimePas, 1);
+      sauceCourante.note ++;
+     // sauceCourante.iLike.push(userCourant);
+     }
+     if (jaime==-1 && jaimePas==-1 ){
+
+      message="vous n'aviez pas d'avis, maintenant vous aimez";
+      sauceCourante.note++;
+     // alert( sauceCourante.note);
+      sauceCourante.iLike.push(userCourant);
+      
+     }
+   
+  }
+  else{
+    // je n'aime pas...
+    message="malus "+jaime+" ,pas: "+jaimePas;
+
+    if (jaimePas!=-1){
+      message="vous avez deja exprimé votre désaccord";}
+    if (jaime!=-1 && jaimePas==-1 ){
+      message="vous n'avez pas aimé, maintenant vous ... ";
+      sauceCourante.iLike.splice(jaimePas, 1);
+      sauceCourante.note --;
+     }
+     if (jaime==-1 && jaimePas==-1 ){
+      message="vous n'aviez pas d'avis, maintenant vous detestez ";
+      sauceCourante.idisLike.push(userCourant);
+      sauceCourante.note --;
+     }
+  }
+  lesSauces[idsauce]=sauceCourante;
+  showSauce(idsauce);
+  document.getElementById("leMessage").innerHTML=message+"<br>";
+}
+
+</script>
+
+
+</html>
