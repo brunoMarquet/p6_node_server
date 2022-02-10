@@ -11,6 +11,32 @@ const xss = require("xss");
   userId: "61f80137ef1ccf7a58ac2f05",
 }; //a revoir
  */
+function editProp(sauceObject) {
+  for (let key in sauceObject) {
+    if (sauceObject.hasOwnProperty(key)) {
+      console.log(key + " : " + sauceObject[key]);
+    }
+  }
+}
+function verifToken(theId) {
+  console.log("con " + theId);
+  return;
+  /**pour modif et delete */
+  // try {
+  //const token = req.headers.authorization.split(" ")[1];
+  const token = req.headers.authorization.split(" ")[1];
+  const decodedToken = jwt.verify(token, "RANDOM_TOKEN_SECRET_101");
+  const userId = decodedToken.userId;
+  console.log(theId + " ,  " + userId);
+  // averifier....
+  if (theId === userId) {
+    console.log("api/sauces  _tokEEE___");
+    return true;
+  } else {
+    console.log("api/sauces  _BAd___");
+    return false;
+  }
+}
 
 exports.createSauceTest____ = (req, res, next) => {
   //console.log("test " + req.file.filename);
@@ -43,7 +69,13 @@ exports.createSauceTest____ = (req, res, next) => {
 exports.createSauce = (req, res, next) => {
   const sauceObject = JSON.parse(req.body.sauce);
 
-  for (let key in sauceObject) {
+  editProp(sauceObject);
+  console.log("_______________");
+  editProp(req.file);
+  console.log("______param_________");
+  editProp(req.params);
+  /* 
+  for (let key in ) {
     if (sauceObject.hasOwnProperty(key)) {
       console.log(`prop : ${key} _ ${sauceObject[key]}`);
     }
@@ -55,7 +87,7 @@ exports.createSauce = (req, res, next) => {
     if (req.file.hasOwnProperty(key)) {
       console.log(`prop_file : ${key} _ ${req.file[key]}`);
     }
-  }
+  } */
   //delete sauceObject._id;
   // a valider
   const sauce = new Sauce({
@@ -89,6 +121,12 @@ exports.createSauce = (req, res, next) => {
 };
 
 exports.getAllSauce = (req, res, next) => {
+  console.log(" en lecture(getAllSauce) : " + req.locals);
+
+  /* console.log("depuis token vers sauces" + res.locals.userId);
+ 
+  console.log("_________________");
+  console.log(JSON.stringify(req.headers)); */
   Sauce.find()
     .then((sauces) => {
       res.status(200).json(sauces);
@@ -152,6 +190,8 @@ exports.modifySauce = (req, res, next) => {
 exports.deleteSauce = (req, res, next) => {
   Sauce.findOne({ _id: req.params.id })
     .then((sauce) => {
+      verifToken(sauce.userId);
+      // console.log("verifToken");
       const filename = sauce.imageUrl.split("/images/")[1];
       fs.unlink(`images/${filename}`, () => {
         Sauce.deleteOne({ _id: req.params.id })
@@ -163,8 +203,8 @@ exports.deleteSauce = (req, res, next) => {
 };
 
 exports.aimer = (req, res, next) => {
-  const userLike = req.body.like;
-  const userId = req.body.userId;
+  let userLike = req.body.like; // 0,+1 ou -1
+  let userId = req.body.userId;
   let leMessage = "";
 
   //console.log("vote: " + userLike + "__userId_" + userId);
@@ -245,7 +285,7 @@ exports.aimer = (req, res, next) => {
 };
 
 function gererNote(note, userId, usersLiked, usersDisliked) {
-  const fruits = []; //, "Orange", "Apple", "Mango", "Kiwi"];
+  //const fruits = []; //, "Orange", "Apple", "Mango", "Kiwi"];
   // fruits.splice(0, 1);
   //console.log("long" + fruits.length);
   //console.log("ii " + fruits.indexOf(userId));
@@ -258,40 +298,40 @@ function gererNote(note, userId, usersLiked, usersDisliked) {
   // console.log(usersDisliked);
 
   let leMessage = "";
-  if (note == 0) {
-    if (jaime != -1) {
+  if (note === 0) {
+    if (jaime !== -1) {
       //
       type = "L";
       leMessage = "vous aimiez, maintenant vous etes neutre";
       console.log(usersLiked.length + " _ " + jaime + " __" + usersLiked);
 
-      usersLiked.splice(0, 1);
+      //usersLiked.splice(0, 1);
       //splice(parseInt(jaime), 1);
       console.log(leMessage + " _ "); // + usersLiked);
 
       // return [type, usersLiked, leMessage];
     }
-    if (jaimePas != -1) {
+    if (jaimePas !== -1) {
       type = "D";
       leMessage = "vous detestiez, maintenant vous etes neutre";
       console.log(
         leMessage + " _lengt " + usersDisliked.length + " indice" + jaimePas
       );
-      if (usersDisliked[jaimePas] == usersId) console.log();
+      if (usersDisliked[jaimePas] === usersId) console.log();
       // usersDisliked.splice(parseInt(jaimePas), 1);
 
       // return [type, usersLiked, leMessage];
     }
   }
-  if (jaime == -1 && jaimePas == -1) {
+  if (jaime === -1 && jaimePas === -1) {
     //le user est absent des listes
-    if (note == 1) {
+    if (note === 1) {
       type = "L";
       leMessage = "vous etiez neutre, maintenant vous aimez";
       usersLiked.push(userId);
       console.log(leMessage + " _ " + usersLiked);
     }
-    if (note == -1) {
+    if (note === -1) {
       type = "D";
       leMessage = "vous etiez neutre, maintenant vous detestez";
       usersDisliked.push(userId);
@@ -301,7 +341,7 @@ function gererNote(note, userId, usersLiked, usersDisliked) {
 
   return "";
 
-  if (note == 1 && jaime == -1) {
+  /* if (note == 1 || jaime == -1) {
     leMessage = "vous n'aviez pas d'avis, maintenant vous aimez";
     usersLiked.push(userId);
     //return [bol, usersLiked, leMessage];
@@ -310,5 +350,5 @@ function gererNote(note, userId, usersLiked, usersDisliked) {
     leMessage = "vous aimiez, maintenant vous etes neutre";
     // usersLiked.splice(jaimePas, 1);
     // return [bol, usersLiked, leMessage];
-  }
+  } */
 }

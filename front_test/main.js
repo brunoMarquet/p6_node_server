@@ -1,3 +1,5 @@
+const { nextTick } = require("process");
+
 document.getElementById("lesSauces").style.display = "none";
 
 function actuHeat(nbre) {
@@ -70,6 +72,67 @@ function allSauces() {
       alert(error);
     });
 }
+function affichepipo() {
+  //app.get("/api/pipo/t1
+  let url = "http://localhost:3000/api/pipo/t1";
+  fetch(url, { method: "GET" })
+    .then((res) => res.json())
+
+    .then((res) => {
+      console.log(res);
+      // res.status(200).json(users2);
+      // next();
+    })
+    .catch((error) => {
+      console.log("erreur");
+    });
+}
+function affichepipo2() {
+  //app.get("/api/pipo/t1
+  let url = "http://localhost:3000/api/pipo/t2";
+  fetch(url, { method: "GET" })
+    .then((res) => res.json())
+
+    .then((res) => {
+      console.log(res);
+      // res.status(200).json(users2);
+      // next();
+    })
+    .catch((error) => {
+      console.log("erreur");
+    });
+}
+function affichepipo3() {
+  //app.get("/api/pipo/t1
+  let url = "http://localhost:3000/api/pipo/t3";
+  fetch(url, { method: "GET" })
+    .then((res) => res.json())
+
+    .then((res) => {
+      console.log(res);
+      // res.status(200).json(users2);
+      // next();
+    })
+    .catch((error) => {
+      console.log("erreur");
+    });
+}
+
+/**_______________________________________________________________________________________________
+ * ________________________________________________________________________________________________
+ _______________________________________________________________________________________________
+ * ________________________________________________________________________________________________
+ _______________________________________________________________________________________________
+ * ________________________________________________________________________________________________
+ _______________________________________________________________________________________________
+ * ________________________________________________________________________________________________
+ _______________________________________________________________________________________________
+ * ________________________________________________________________________________________________
+ _______________________________________________________________________________________________
+ * ________________________________________________________________________________________________
+ _______________________________________________________________________________________________
+ * ________________________________________________________________________________________________
+ */
 
 function leLogin(type) {
   event.preventDefault();
@@ -146,14 +209,12 @@ function logExemple(userTxt) {
   const user = userTxt.split(",@,");
   //console.log(`hello :  ${user[0]} , pass _:   ${user[1]} `);
   const envoiPost = { email: user[0], password: user[1] };
-
   const options = formatReq("POST", envoiPost);
   let url = "http://localhost:3000/api/auth/login";
   fetch(url, options)
     .then((res) => res.json())
 
     .then((res) => {
-      //console.log("in boucle");
       console.log(res);
       editSauce(res);
     })
@@ -183,10 +244,32 @@ function editSauce(res) {
     document.getElementById("lesSauces").style.display = "none";
   }
 }
+function afficheUser() {
+  event.preventDefault();
 
+  //console.log("valeur");
+  const url = "http://localhost:3000/api/auth";
+  //const options = formatReq("get", { test: valeur });
+  debugger;
+  fetch(url, { method: "GET" })
+    .then((res) => res.json())
+
+    .then((res) => {
+      let texte = "666666";
+      console.log(res);
+      res.status(200).json(users2);
+    })
+    .catch((error) => {
+      res.status(400).json({
+        error: error,
+      });
+    });
+}
 /* function allUser() {
-  let url = "http://localhost:3000/api/auths";
-  fetch(url)
+   fetch(url)
+  let url = "http://localhost:3000/api/auth";
+   fetch(url, { method: "GET" })
+ 
     .then((res) => res.json())
 
     .then((res) => {
