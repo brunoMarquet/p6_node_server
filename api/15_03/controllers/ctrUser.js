@@ -17,23 +17,10 @@ schemaPassValid
   .not()
   .oneOf(["000", "123"]); // Blacklist these values
 
-/**
-  age: "13",Math.floor(Math.random() * 40) + 18,
-          date: new date(),} req 
-  new date().getTime()
-   */
-
-function verifDoublon(mail) {
-  /*   if (User.findOne({ email: mail })) {
-    console.log("mot de passe deja pris !");
-    res.status(401).json({
-      message: "mot de passe deja pris !",
-    });
-  }  */
-}
 function verifReq(req) {
   // console.log(schema.validate("jok e", { details: true }));
   if (req.body["password"] && req.body["email"]) {
+    //a deplacer ?
     return true;
   }
 }
@@ -47,8 +34,8 @@ signup = (req, res, next) => {
   console.log("sign_up !");
 
   if (verifReq(req)) {
-    const psw = req.body["password"];
-    const mail = req.body["email"];
+    const psw = res.locals.psw;
+    const mail = res.locals.email;
     console.log("hello_sign_up! " + mail);
 
     if (!schemaPassValid.validate(psw)) {
@@ -67,6 +54,7 @@ signup = (req, res, next) => {
       console.log(mail + " : mot de passe deja pris !");
       //c'est un doublon
     }
+
     const d = new Date();
     let laDate = `${d.getDay()}_${d.getHours()}_${d.getMinutes()}_${d.getSeconds()}`;
     res.locals.userId = userId;
@@ -95,12 +83,15 @@ signup = (req, res, next) => {
 
 login = (req, res, next) => {
   if (verifReq(req)) {
-    const psw = req.body["password"];
-    const mail = req.body["email"];
+    console.log("res.locals_signup_: ", res.locals);
+    /* console.log("truc psw: ", res.locals.psw);
+    console.log("truc mail: ", res.locals.email); */
+    const psw = res.locals.psw;
+    const mail = res.locals.email;
     User.findOne({ email: mail })
       .then((user) => {
         if (!user) {
-          console.log("user  Non ok !");
+          console.log("user  NON ok !");
           return res
             .status(401)
             .json({ error: "Utilisateur " + mail + "non trouvé !" });
@@ -114,17 +105,24 @@ login = (req, res, next) => {
                 .status(401)
                 .json({ error: "Mot de passe incorrect !" });
             }
-            console.log(`user :  ${mail} login  ok!${new Date()}`);
 
+            res.locals.userId2 = user._id;
             // res.locals.userId = user._id;
-            // res.locals.mail = mail;
-            res.status(200).json({
-              test: "classRoom",
-              userId: user._id,
-              token: jwt.sign({ userId: user._id, userMail: mail }, clefToken, {
+            res.locals.mail = mail;
+            const leToken = jwt.sign(
+              { userId: user._id, userMail: mail },
+              clefToken,
+              {
                 expiresIn: "24h",
-              }),
+              }
+            );
+            // console.log("user login  ok! token " + leToken);
+            res.locals.userId2 = user._id;
+            res.status(200).json({
+              userId: user._id,
+              token: leToken,
             });
+            next();
           })
           .catch((error) => res.status(500).json({ error }));
       })
@@ -146,10 +144,54 @@ getAllUser = (req, res, next) => {
     });
 };
 testUser = (req, res, next) => {
-  console.log("truc" + res.locals.testTruc);
+  /* return;
+  console.log("truc : " + res.locals.testTruc);
   res.locals.testToken = jwt.sign({ truc2: res.locals.testTruc }, clefToken, {
     expiresIn: "24h",
-  });
+  }); */
   next();
 };
+
 module.exports = { login, signup, getAllUser, testUser };
+
+/**
+  age: "13",Math.floor(Math.random() * 40) + 18,
+          date: new date(),} req 
+  new date().getTime()
+   */
+
+function verifDoublon(mail) {
+  /*   if (User.findOne({ email: mail })) {
+      console.log("mot de passe deja pris !");
+      res.status(401).json({
+        message: "mot de passe deja pris !",
+      });
+    }  */
+}
+
+/* 
+exports.signup____ = (req, res, next) => {
+  const psw = req.body["password"];
+  const mail = req.body["email"];
+  console.log("hello_sign_up! " + mail);
+  if (!schemaPassValid.validate(psw)) {
+    console.log("mot de passe pas adapté !");
+    res.status(401).json({
+      message: "mot de passe pas adapté !",
+    });
+  }
+  bcrypt
+    .hash(psw, 10)
+    .then((hash) => {
+      const user = new User({
+        email: mail,
+        password: hash,
+      });
+      console.log("user à creer ???_ " + mail);
+      user
+        .save()
+        .then(() => res.status(201).json({ message: "Utilisateur créé !" }))
+        .catch((error) => res.status(400).json({ error }));
+    })
+    .catch((error) => res.status(500).json({ error }));
+}; */

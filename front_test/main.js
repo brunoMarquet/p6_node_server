@@ -1,5 +1,3 @@
-const { nextTick } = require("process");
-
 document.getElementById("lesSauces").style.display = "none";
 
 function actuHeat(nbre) {
@@ -17,9 +15,9 @@ function addSauce() {
     //  console.log();
   }
   console.log(laSauce);
-  let imagePath = "C:\fakepathlogo.png";
+  let imagePath = "C:\fake_pathlogo.png";
   if (document.getElementById("imageUrl").value) {
-    imagePath = document.getElementById("imageUrl").value;
+    const imagePath = document.getElementById("imageUrl").value;
   }
   console.log(imagePath);
 }
@@ -73,6 +71,40 @@ function allSauces() {
     });
 }
 function affichepipo() {
+  const fruits = ["Orange", "Apple", "Mango", "Kiwi"];
+
+  const filterFunction2 = (fruit) => {
+    return fruit !== "Mango";
+  };
+  const filterFunction3 = (fruit) => {
+    if (fruit !== "Mango") {
+      return true;
+    } else {
+      return false;
+    }
+  };
+  const filterFunction = (fruit) => {
+    //console.log(indexOf(fruit));
+    /* if (fruit.findIndex !== 2) {
+      return true;
+    } else {
+      return false;
+    } */
+  };
+
+  const filterFunctionIndex = (fruit) => {
+    return fruit.findIndex !== 2;
+  };
+  const fruitsWithoutMango = fruits.filter(filterFunction);
+  const fruitsWithout_2 = fruits.filter(filterFunctionIndex);
+  /* console.log(
+    "kiwi ",
+    fruits.findIndex((fruit) => fruit === "Kiwi")
+  ); */
+
+  console.log("fruit index", fruitsWithout_2);
+  console.log("fruit : ", fruitsWithoutMango);
+
   //app.get("/api/pipo/t1
   let url = "http://localhost:3000/api/pipo/t1";
   fetch(url, { method: "GET" })
@@ -105,6 +137,21 @@ function affichepipo2() {
 function affichepipo3() {
   //app.get("/api/pipo/t1
   let url = "http://localhost:3000/api/pipo/t3";
+  fetch(url, { method: "GET" })
+    .then((res) => res.json())
+
+    .then((res) => {
+      console.log(res);
+      // res.status(200).json(users2);
+      // next();
+    })
+    .catch((error) => {
+      console.log("erreur");
+    });
+}
+function affichepipopipo() {
+  //app.get("/api/pipo/t1
+  let url = "http://localhost:3000/api/pipo/pipo";
   fetch(url, { method: "GET" })
     .then((res) => res.json())
 
