@@ -2,6 +2,15 @@ const Sauce = require("../models/Sauce");
 const fs = require("fs");
 const xss = require("xss");
 
+/* const uneSauce = {
+  name: "88",
+  manufacturer: "888",
+  description: "888888888888888",
+  mainPepper: "poivron",
+  heat: "4",
+  userId: "61f80137ef1ccf7a58ac2f05",
+}; //a revoir
+ */
 function editProp(sauceObject) {
   for (let key in sauceObject) {
     if (sauceObject.hasOwnProperty(key)) {
@@ -45,6 +54,16 @@ exports.createSauceTest____ = (req, res, next) => {
       console.log(`prop_file : ${key} _ ${req.file[key]}`);
     }
   }
+
+  /* const sauce = new Sauce({
+    ...sauceObject,
+      imageUrl: `${req.protocol}://${req.get("host")}/images/${
+      req.file.filename
+    }`, 
+    imageUrl: "titi.jpg",
+    likes: "0",
+    dislikes: "0",
+  }); */
 };
 
 exports.createSauce = (req, res, next) => {
@@ -92,7 +111,7 @@ exports.infodate = (req, res, next) => {
 };
 
 exports.getAllSauce = (req, res, next) => {
-  // console.log("res  en lecture(getAllSauce) : ", res.locals);
+  console.log("res  en lecture(getAllSauce) : ", res.locals);
 
   //console.log(" en lecture rs   (user ) : ", res.locals.userId);
 
@@ -194,7 +213,6 @@ exports.aimerSauce = (req, res, next) => {
   let userId = req.body.userId;
   const idSauce = req.params.id;
   let leMessage = "";
-  saucePipo();
 
   //console.log("vote: " + laNote + "__userId_" + userId);
 
@@ -209,49 +227,23 @@ exports.aimerSauce = (req, res, next) => {
     .then((sauce) => {
       //const usersLiked = sauce.usersLiked;
       // const usersDisliked = sauce.usersDisliked;
-      let usersAime = sauce.usersLiked;
-      let usersAimePas = sauce.usersDisliked;
-      let votePlus = sauce.likes;
-      let voteMoins = sauce.dislikes;
+      const usersAime = sauce.usersLiked;
+      const usersAimePas = sauce.usersDisliked;
 
-      //const retour = gererNote(laNote, userId, usersAime, usersAimePas);
+      const retour = gererNote(laNote, userId, usersAime, usersAimePas);
       if (laNote == 1) {
         //ajout dans Usersliked et +1 dans likes
-        votePlus++;
-        usersAime.push(userId);
-        leMessage = "L'utilisateur aime";
-        likeActu(res, idSauce, votePlus, usersAime, leMessage);
-        /* Sauce.updateOne(
+        Sauce.updateOne(
           { _id: idSauce },
-          {
-            $set: {
-              likes: votePlus,
-
-              usersLiked: usersAime,
-            },
-          }
+          { $push: { usersLiked: userId }, $inc: { likes: 1 } }
         )
-          .then(() => res.status(200).json({ message: leMessage }))
-          .catch((error) => res.status(400).json({ error })); */
-
-        // ce que je veux :
-
-        /*  Sauce.updateOne(
-            { _id: idSauce },
-            { $set: { usersLiked: usersAime, likes: votePlus } }
-          )
-            .then(() => res.status(200).json({ message: leMessage }))
-            .catch((error) => res.status(400).json({ error }));
- */
+          .then(() => res.status(200).json({ message: "L'utilisateur aime" }))
+          .catch((error) => res.status(400).json({ error }));
 
         //si -1
       }
       if (laNote == -1) {
         //ajout dans Usersdisliked et +1 dans dislikes
-        voteMoins++;
-        usersAimePas.push(userId);
-        leMessage = "L'utilisateur n'aime pas";
-        disLikeActu(res, idSauce, voteMoins, usersAimePas, leMessage);
         Sauce.updateOne(
           { _id: idSauce },
           { $push: { usersDisliked: userId }, $inc: { dislikes: 1 } }
@@ -263,40 +255,24 @@ exports.aimerSauce = (req, res, next) => {
       }
 
       if (laNote == 0) {
-        // const jaime = usersAime.find((usersId) => usersId == userId);
-        // const jaimePas = usersAimePas.find((usersId) => usersId == userId);
-        const jaime = usersAime.indexOf(userId);
-        const jaimePas = usersAimePas.indexOf(userId);
-
+        //où est l'utisisateur?
+        const jaime = usersAime.find((usersId) => usersId == userId);
+        const jaimePas = usersAimePas.find((usersId) => usersId == userId);
         //si dans liked
-        // if (jaime) {
-        if (jaime !== -1) {
+        if (jaime) {
           //suppression dans Usersliked et -1 dans likes
-          votePlus--;
-          usersAime.splice(parseInt(jaime), 1);
-          leMessage = "L'utilisateur n'aime plus";
-          // likeActu(res, idSauce, votePlus, usersAime, leMessage);
           Sauce.updateOne(
             { _id: idSauce },
-            {
-              $set: {
-                likes: votePlus,
-
-                usersLiked: usersAime,
-              },
-            }
+            { $pull: { usersLiked: userId }, $inc: { likes: -1 } }
           )
-            .then(() => res.status(200).json({ message: leMessage }))
+            .then(() =>
+              res.status(200).json({ message: "L'utilisateur n'aime plus" })
+            )
             .catch((error) => res.status(400).json({ error }));
 
           //si dans disliked
-        } else if (jaimePas !== -1) {
+        } else if (jaimePas) {
           //suppression dans Usersdisliked et -1 dans dislikes
-          voteMoins--;
-          usersAimePas.splice(parseInt(jaimePas), 1);
-          leMessage = "L'utilisateur ne déteste plus";
-          disLikeActu(res, idSauce, voteMoins, usersAimePas, leMessage);
-
           Sauce.updateOne(
             { _id: idSauce },
             { $pull: { usersDisliked: userId }, $inc: { dislikes: -1 } }
@@ -313,45 +289,72 @@ exports.aimerSauce = (req, res, next) => {
     });
 };
 
-function likeActu(res, idSauce, votePlus, usersAime, leMessage) {
-  console.log("votePlus: ", votePlus, " mess ", leMessage);
-  console.log("usersAime : ", usersAime);
-  Sauce.updateOne(
-    { _id: idSauce },
-    {
-      $set: {
-        likes: votePlus,
+function gererNote(note, userId, usersLiked, usersDisliked) {
+  return "";
+  //const fruits = []; //, "Orange", "Apple", "Mango", "Kiwi"];
+  // fruits.splice(0, 1);
+  //console.log("long" + fruits.length);
+  //console.log("ii " + fruits.indexOf(userId));
 
-        usersLiked: usersAime,
-      },
+  const jaime = usersLiked.indexOf(userId);
+  const jaimePas = usersDisliked.indexOf(userId);
+  let type = 0; //true pour modifier i like..
+  // console.log("present/absent" + jaime + "_" + jaimePas);
+  //console.log(usersLiked);
+  // console.log(usersDisliked);
+
+  let leMessage = "";
+  if (note === 0) {
+    if (jaime !== -1) {
+      //
+      type = "L";
+      leMessage = "vous aimiez, maintenant vous etes neutre";
+      console.log(usersLiked.length + " _ " + jaime + " __" + usersLiked);
+
+      //usersLiked.splice(0, 1);
+      //splice(parseInt(jaime), 1);
+      console.log(leMessage + " _ "); // + usersLiked);
+
+      // return [type, usersLiked, leMessage];
     }
-  )
-    .then(() => res.status(200).json({ message: leMessage }))
-    .catch((error) => res.status(400).json({ error }));
-}
+    if (jaimePas !== -1) {
+      type = "D";
+      leMessage = "vous detestiez, maintenant vous etes neutre";
+      console.log(
+        leMessage + " _lengt " + usersDisliked.length + " indice" + jaimePas
+      );
+      if (usersDisliked[jaimePas] === usersId) console.log();
+      // usersDisliked.splice(parseInt(jaimePas), 1);
 
-function disLikeActu(res, idSauce, voteMoins, usersAimePas, leMessage) {
-  console.log("voteMoins: ", voteMoins, " mess ", leMessage);
-  console.log("usersAimePas : ", usersAimePas);
-}
-
-function saucePipo() {
-  //  { name: "455_trop_bon cool" },
-
-  const tab1 = [];
-  /*  const tab1 = [ "titi" + Math.floor(Math.random() * 90),
-    "leo" + Math.floor(Math.random() * 90),
-  ]; */
-  Sauce.updateOne(
-    { _id: "61f705911ce6adcf127637e3" },
-    {
-      $set: {
-        likes: Math.floor(Math.random() * 90),
-        manufacturer: "Buitoni" + Math.floor(Math.random() * 90 + 1),
-        usersLiked: tab1,
-      },
+      // return [type, usersLiked, leMessage];
     }
-  )
-    .then(() => console.log("updateOne ok "))
-    .catch((error) => console.log("erreur"));
+  }
+  if (jaime === -1 && jaimePas === -1) {
+    //le user est absent des listes
+    if (note === 1) {
+      type = "L";
+      leMessage = "vous etiez neutre, maintenant vous aimez";
+      usersLiked.push(userId);
+      console.log(leMessage + " _ " + usersLiked);
+    }
+    if (note === -1) {
+      type = "D";
+      leMessage = "vous etiez neutre, maintenant vous detestez";
+      usersDisliked.push(userId);
+      console.log(leMessage + " _ " + usersDisliked);
+    }
+  }
+
+  return "";
+
+  /* if (note == 1 || jaime == -1) {
+    leMessage = "vous n'aviez pas d'avis, maintenant vous aimez";
+    usersLiked.push(userId);
+    //return [bol, usersLiked, leMessage];
+  }
+  if (note == 0 && jaime != -1) {
+    leMessage = "vous aimiez, maintenant vous etes neutre";
+    // usersLiked.splice(jaimePas, 1);
+    // return [bol, usersLiked, leMessage];
+  } */
 }

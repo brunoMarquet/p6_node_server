@@ -22,7 +22,8 @@ const storage = multer.diskStorage({
      */
 
     const extension = MIME_TYPES[file.mimetype];
-    callback(null, name + Date.now() + "." + extension);
+    const fileName = name + Date.now() + "." + extension;
+    callback(null, fileName);
   },
 });
 

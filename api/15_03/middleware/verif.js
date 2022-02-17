@@ -21,8 +21,8 @@ module.exports = (req, res, next) => {
     console.log("****************");
     console.log("from token ", userMail, " et id: ", userId);
     const mail = res.locals.email;
-    console.log("from res_____  ", res.locals);
-    console.log("from req_____  ", req.body);
+    //console.log("from res_____  ", res.locals);
+    //console.log("from req_____  ", req.body);
 
     /* console.log("from req-local:userId2 : " + req.locals.userId2);
     console.log("from token__ userId : " + userId);
@@ -31,10 +31,10 @@ module.exports = (req, res, next) => {
     if (req.body.userId && req.body.userId !== userId) {
       throw "Invalid user ID";
     } else {
-      // res.locals.date = Date.now();
+      res.locals.date = Date.now();
       // console.log("res  en lecture(verif) : ", res.locals);
-      // res.locals.userId = userId;
-      // res.locals.mail = userId;
+      res.locals.userId = userId;
+      res.locals.mail2 = mail;
       //console.log(" token  ok" + new Date());
       next();
     }

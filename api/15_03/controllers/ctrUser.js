@@ -36,6 +36,10 @@ signup = (req, res, next) => {
   if (verifReq(req)) {
     const psw = res.locals.psw;
     const mail = res.locals.email;
+    /*
+     const psw = req.body["password"];
+  const mail = req.body["email"];
+    */
     console.log("hello_sign_up! " + mail);
 
     if (!schemaPassValid.validate(psw)) {
@@ -51,13 +55,13 @@ signup = (req, res, next) => {
       });
     }
     if (User.findOne({ email: mail })) {
-      console.log(mail + " : mot de passe deja pris !");
+      console.log(mail + " : mail deja utilisé !");
       //c'est un doublon
     }
 
     const d = new Date();
-    let laDate = `${d.getDay()}_${d.getHours()}_${d.getMinutes()}_${d.getSeconds()}`;
-    res.locals.userId = userId;
+    let laDate = `${d.getDate()}_${d.getHours()}_${d.getMinutes()}_${d.getSeconds()}`;
+    //res.locals.userId = userId;
     res.locals.mail = mail;
 
     bcrypt
@@ -72,7 +76,7 @@ signup = (req, res, next) => {
         console.log("user à creer ???_ " + mail);
         user
           .save()
-          .then(() => res.status(201).json({ message: "Utilisateur créé !" }))
+          .then(() => res.status(201).json({ message: "Utilisateur creé !" }))
           .catch((error) => res.status(400).json({ error }));
       })
       .catch((error) => res.status(500).json({ error }));
@@ -82,12 +86,20 @@ signup = (req, res, next) => {
 };
 
 login = (req, res, next) => {
+  userPipo();
   if (verifReq(req)) {
     console.log("res.locals_signup_: ", res.locals);
+    //console.log("res.body_signup_: ", res.body);
+
     /* console.log("truc psw: ", res.locals.psw);
     console.log("truc mail: ", res.locals.email); */
     const psw = res.locals.psw;
     const mail = res.locals.email;
+    /*
+     const psw = req.body["password"];
+  const mail = req.body["email"];
+    */
+
     User.findOne({ email: mail })
       .then((user) => {
         if (!user) {
@@ -107,6 +119,7 @@ login = (req, res, next) => {
             }
 
             res.locals.userId2 = user._id;
+
             // res.locals.userId = user._id;
             res.locals.mail = mail;
             const leToken = jwt.sign(
@@ -116,13 +129,19 @@ login = (req, res, next) => {
                 expiresIn: "24h",
               }
             );
-            // console.log("user login  ok! token " + leToken);
+            console.log(
+              "user",
+              mail,
+              "heure",
+              new Date(),
+              ", token " + leToken
+            );
             res.locals.userId2 = user._id;
             res.status(200).json({
               userId: user._id,
               token: leToken,
             });
-            next();
+            // next();
           })
           .catch((error) => res.status(500).json({ error }));
       })
@@ -144,15 +163,42 @@ getAllUser = (req, res, next) => {
     });
 };
 testUser = (req, res, next) => {
+  User.updateOne(
+    { email: "tito102@free.fr" },
+    {
+      $set: {
+        date: "jeudi-" + Math.floor(Math.random() * 40),
+        age: Math.floor(Math.random() * 40) + 18,
+      },
+    }
+  )
+    .then(() => next())
+    .catch((error) => res.status(400).json({ error }));
+
   /* return;
   console.log("truc : " + res.locals.testTruc);
   res.locals.testToken = jwt.sign({ truc2: res.locals.testTruc }, clefToken, {
     expiresIn: "24h",
   }); */
-  next();
 };
 
 module.exports = { login, signup, getAllUser, testUser };
+
+function userPipo() {
+  User.updateOne(
+    { email: "tito@free.fr" },
+    {
+      $set: {
+        date: "jeudi-" + Math.floor(Math.random() * 400),
+        age: Math.floor(Math.random() * 400) + 18,
+      },
+    }
+  )
+    .then(() => console.log("updateOne ok "))
+    .catch((error) => console.log("erreur"));
+
+  /// return;
+}
 
 /**
   age: "13",Math.floor(Math.random() * 40) + 18,

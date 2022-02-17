@@ -38,6 +38,13 @@ app.use("/images", express.static(path.join(__dirname, "images")));
 const userRoutes = require("./routes/road"); */
 
 ////varias
+const infoL = (req, res, next) => {
+  console.log("local : ", res.locals);
+  ///console.log("**_______________**");
+  // console.log("header : ", req.headers);
+  next();
+};
+
 const router = express.Router();
 
 const verif = require("./middleware/verif");
@@ -46,17 +53,19 @@ const multer = require("./middleware/multer-config");
 const sauceCtrl = require("./controllers/ctrSauce");
 /*sauces**/
 const pathSauce = "/api/sauces/";
-app.get(pathSauce, verif, sauceCtrl.infodate, sauceCtrl.getAllSauce);
+app.get(pathSauce, infoL, verif, sauceCtrl.infodate, sauceCtrl.getAllSauce);
 //router.get("/api/sauces/", verif, sauceCtrl.infodate, sauceCtrl.getAllSauce);
 app.get(pathSauce + ":id", verif, sauceCtrl.getOneSauce);
 app.post(pathSauce, verif, multer, sauceCtrl.createSauce);
 
 app.put(pathSauce + ":id", verif, multer, sauceCtrl.modifySauce);
 app.delete(pathSauce + ":id", verif, sauceCtrl.deleteSauce);
-app.post(pathSauce + ":id/like", verif, sauceCtrl.aimer);
+app.post(pathSauce + ":id/like", verif, sauceCtrl.aimerSauce);
 
 /*User**/
+
 const inLocal = (req, res, next) => {
+  /**Melletr ele pasw en local est une connerie didactique */
   const psw = req.body["password"];
   const mail = req.body["email"];
   console.log(" coucou testUser2  ", psw, mail);
@@ -70,7 +79,7 @@ const inLocal = (req, res, next) => {
 };
 const userCtrl = require("./controllers/ctrUser");
 const pathUser = "/api/auth/";
-app.post(pathUser + "login", inLocal, userCtrl.login);
+app.post(pathUser + "login", inLocal, userCtrl.testUser, userCtrl.login);
 app.post(pathUser + "signup", inLocal, userCtrl.signup);
 //userCtrl.testUser,
 //router.post("/", userCtrl.getAllUser);
