@@ -86,7 +86,7 @@ signup = (req, res, next) => {
 };
 
 login = (req, res, next) => {
-  userPipo();
+  //userPipo();
   if (verifReq(req)) {
     console.log("res.locals_signup_: ", res.locals);
     //console.log("res.body_signup_: ", res.body);
@@ -119,6 +119,7 @@ login = (req, res, next) => {
             }
 
             res.locals.userId2 = user._id;
+            console.log("je passe");
 
             // res.locals.userId = user._id;
             res.locals.mail = mail;

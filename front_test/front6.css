@@ -1,0 +1,29 @@
+button {
+  padding: 10px;
+  margin: 20px;
+  margin-left: 30px;
+  display: inline;
+}
+button:hover {
+  opacity: 0.8;
+}
+
+i {
+  font-size: 1.6rem;
+}
+.fa-thumbs-up {
+  color: rgb(27, 87, 25);
+}
+.fa-thumbs-down {
+  color: rgb(136, 18, 18);
+}
+
+.effacer {
+  background-color: rgb(226, 156, 75);
+}
+.modif {
+  background-color: rgb(186, 119, 218);
+}
+#nav_bton {
+  /* display: none;*/
+}

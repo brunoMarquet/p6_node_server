@@ -9,25 +9,7 @@ function editProp(sauceObject) {
     }
   }
 }
-function verifToken(theId) {
-  console.log(" token55", theId);
-  return;
-  /**pour modif et delete */
-  // try {
-  //const token = req.headers.authorization.split(" ")[1];
-  const token = req.headers.authorization.split(" ")[1];
-  const decodedToken = jwt.verify(token, "RANDOM_TOKEN_SECRET_101");
-  const userId = decodedToken.userId;
-  console.log(theId + " ,  " + userId);
-  // averifier....
-  if (theId === userId) {
-    console.log("api/sauces  _tokEEE___");
-    return true;
-  } else {
-    console.log("api/sauces  _BAd___");
-    return false;
-  }
-}
+function verifUser(theId) {}
 
 exports.createSauceTest____ = (req, res, next) => {
   //console.log("test " + req.file.filename);
@@ -86,13 +68,13 @@ exports.createSauce = (req, res, next) => {
     .catch((error) => res.status(400).json({ error }));
 };
 exports.infodate = (req, res, next) => {
-  console.log(" en lecture rs  infodate-- (getAllSauce) : ", res.locals);
+  //console.log(" en lecture rs  infodate-- (getAllSauce) : ", res.locals);
 
   next();
 };
 
 exports.getAllSauce = (req, res, next) => {
-  // console.log("res  en lecture(getAllSauce) : ", res.locals);
+  //console.log("res  en lecture in getAllSauce) : ", res.locals);
 
   //console.log(" en lecture rs   (user ) : ", res.locals.userId);
 
@@ -126,42 +108,69 @@ exports.getOneSauce = (req, res, next) => {
 };
 
 exports.modifySauce = (req, res, next) => {
-  // je comprends pas
-  const sauceObject = req.file
+  console.log("MODIF", req.body);
+
+  const idSauce = req.params.id;
+
+  //
+
+  /* 
+  je comprends pas
+ const sauceObject = req.file
     ? {
         ...JSON.parse(req.body.sauce),
         imageUrl: `${req.protocol}://${req.get("host")}/images/${
           req.file.filename
         }`,
       }
-    : { ...req.body };
+    : { ...req.body }; */
 
-  Sauce.findOne({ _id: req.params.id })
+  //  Sauce.findOne({ _id: req.params.id })
+
+  trouverSauce(idSauce)
     .then((sauce) => {
-      if (req.file) {
-        const filename = sauce.imageUrl.split("/images/")[1];
-        fs.unlink(`images/${filename}`, () => {
-          Sauce.updateOne(
-            { _id: req.params.id },
-            { ...sauceObject, _id: req.params.id }
-          )
-            .then(() => res.status(200).json({ message: "Objet modifié !" }))
-            .catch((error) => res.status(400).json({ error }));
-        });
-      } else {
-        Sauce.updateOne(
-          { _id: req.params.id },
-          { ...sauceObject, _id: req.params.id }
-        )
+      if (res.locals.userId === sauce.userId) {
+        console.log(" yes res.locals.userId");
+        Sauce.updateOne({ _id: idSauce }, { ...sauce, _id: idSauce })
           .then(() => res.status(200).json({ message: "Objet modifié !" }))
-          .catch((error) => res.status(400).json({ error }));
+          .catch((error) => res.status(400).json({ error: "Objet modifié !" }));
+      } else {
+        console.log(" erreur userId");
+        res.status(404).json({ error: "user pas autorisé" });
       }
     })
+
     .catch((error) => res.status(500).json({ error }));
 };
 
 exports.deleteSauce = (req, res, next) => {
-  Sauce.findOne({ _id: req.params.id })
+  const idSauce = req.params.id;
+  console.log("delete");
+  console.log("verif", idSauce);
+  //res.status(200).json({ message: "Stop_delete!888" });
+
+  trouverSauce(idSauce)
+    .then((sauce) => {
+      if (res.locals.userId === sauce.userId) {
+        console.log("usersId ok");
+        res.status(200).json({ message: "Stop_delete!" });
+      } else {
+        console.log("usersId pas ok");
+      }
+
+      /* 
+      const filename = sauce.imageUrl.split("/images/")[1];
+      fs.unlink(`images/${filename}`, () => {
+        Sauce.deleteOne({ _id: req.params.id })
+          .then(() => res.status(200).json({ message: "sauce supprimée !" }))
+          .catch((error) => res.status(400).json({ error }));
+      }); */
+    })
+    .catch((error) => res.status(500).json({ error }));
+};
+exports.deleteSauce__8888888__ = (req, res, next) => {
+  const idSauce = req.params.id;
+  trouverSauce(idSauce)
     .then((sauce) => {
       verifToken(sauce.userId);
       // console.log("verifToken");
@@ -174,38 +183,18 @@ exports.deleteSauce = (req, res, next) => {
     })
     .catch((error) => res.status(500).json({ error }));
 };
-exports.deleteSauce____ = (req, res, next) => {
-  Sauce.findOne({ _id: req.params.id })
-    .then((sauce) => {
-      verifToken(sauce.userId);
-      // console.log("verifToken");
-      const filename = sauce.imageUrl.split("/images/")[1];
-      fs.unlink(`images/${filename}`, () => {
-        Sauce.deleteOne({ _id: req.params.id })
-          .then(() => res.status(200).json({ message: "Objet supprimé !" }))
-          .catch((error) => res.status(400).json({ error }));
-      });
-    })
-    .catch((error) => res.status(500).json({ error }));
-};
+function trouverSauce(idSauce) {
+  return Sauce.findOne({ _id: idSauce });
+}
 
 exports.aimerSauce = (req, res, next) => {
   let laNote = req.body.like; // 0,+1 ou -1
   let userId = req.body.userId;
   const idSauce = req.params.id;
   let leMessage = "";
-  saucePipo();
+  //saucePipo();
 
-  //console.log("vote: " + laNote + "__userId_" + userId);
-
-  //console.log("id_sauce" + idSauce);
-  //let arrayVote = trouverSauce(idSauce);
-  //console.log(arrayVote);
-
-  // const truc = ["titi", "tot", "tata"];
-  // console.log(truc);
-
-  Sauce.findOne({ _id: idSauce })
+  trouverSauce(idSauce)
     .then((sauce) => {
       //const usersLiked = sauce.usersLiked;
       // const usersDisliked = sauce.usersDisliked;
@@ -220,45 +209,18 @@ exports.aimerSauce = (req, res, next) => {
         votePlus++;
         usersAime.push(userId);
         leMessage = "L'utilisateur aime";
-        likeActu(res, idSauce, votePlus, usersAime, leMessage);
-        /* Sauce.updateOne(
-          { _id: idSauce },
-          {
-            $set: {
-              likes: votePlus,
-
-              usersLiked: usersAime,
-            },
-          }
-        )
+        likeActu(idSauce, votePlus, usersAime)
           .then(() => res.status(200).json({ message: leMessage }))
-          .catch((error) => res.status(400).json({ error })); */
-
-        // ce que je veux :
-
-        /*  Sauce.updateOne(
-            { _id: idSauce },
-            { $set: { usersLiked: usersAime, likes: votePlus } }
-          )
-            .then(() => res.status(200).json({ message: leMessage }))
-            .catch((error) => res.status(400).json({ error }));
- */
-
-        //si -1
+          .catch((error) => res.status(400).json({ error }));
       }
       if (laNote == -1) {
         //ajout dans Usersdisliked et +1 dans dislikes
         voteMoins++;
         usersAimePas.push(userId);
         leMessage = "L'utilisateur n'aime pas";
-        disLikeActu(res, idSauce, voteMoins, usersAimePas, leMessage);
-        Sauce.updateOne(
-          { _id: idSauce },
-          { $push: { usersDisliked: userId }, $inc: { dislikes: 1 } }
-        )
-          .then(() =>
-            res.status(200).json({ message: "L'utilisateur n'aime pas" })
-          )
+        //console.log("medoum");
+        disLikeActu(idSauce, voteMoins, usersAimePas)
+          .then(() => res.status(200).json({ message: leMessage }))
           .catch((error) => res.status(400).json({ error }));
       }
 
@@ -275,17 +237,7 @@ exports.aimerSauce = (req, res, next) => {
           votePlus--;
           usersAime.splice(parseInt(jaime), 1);
           leMessage = "L'utilisateur n'aime plus";
-          // likeActu(res, idSauce, votePlus, usersAime, leMessage);
-          Sauce.updateOne(
-            { _id: idSauce },
-            {
-              $set: {
-                likes: votePlus,
-
-                usersLiked: usersAime,
-              },
-            }
-          )
+          likeActu(idSauce, votePlus, usersAime)
             .then(() => res.status(200).json({ message: leMessage }))
             .catch((error) => res.status(400).json({ error }));
 
@@ -295,15 +247,8 @@ exports.aimerSauce = (req, res, next) => {
           voteMoins--;
           usersAimePas.splice(parseInt(jaimePas), 1);
           leMessage = "L'utilisateur ne déteste plus";
-          disLikeActu(res, idSauce, voteMoins, usersAimePas, leMessage);
-
-          Sauce.updateOne(
-            { _id: idSauce },
-            { $pull: { usersDisliked: userId }, $inc: { dislikes: -1 } }
-          )
-            .then(() =>
-              res.status(200).json({ message: "L'utilisateur ne déteste plus" })
-            )
+          disLikeActu(idSauce, voteMoins, usersAimePas)
+            .then(() => res.status(200).json({ message: leMessage }))
             .catch((error) => res.status(400).json({ error }));
         }
       }
@@ -313,29 +258,36 @@ exports.aimerSauce = (req, res, next) => {
     });
 };
 
-function likeActu(res, idSauce, votePlus, usersAime, leMessage) {
-  console.log("votePlus: ", votePlus, " mess ", leMessage);
-  console.log("usersAime : ", usersAime);
-  Sauce.updateOne(
+function likeActu(idSauce, votePlus, usersAime) {
+  /*  console.log("votePlus: ", votePlus, " mess " );
+  console.log("usersAime : ", usersAime); */
+  return Sauce.updateOne(
     { _id: idSauce },
     {
       $set: {
         likes: votePlus,
-
         usersLiked: usersAime,
       },
     }
-  )
-    .then(() => res.status(200).json({ message: leMessage }))
-    .catch((error) => res.status(400).json({ error }));
+  );
 }
 
-function disLikeActu(res, idSauce, voteMoins, usersAimePas, leMessage) {
-  console.log("voteMoins: ", voteMoins, " mess ", leMessage);
+function disLikeActu(idSauce, voteMoins, usersAimePas) {
+  console.log("voteMoins: ", voteMoins, " mess ");
   console.log("usersAimePas : ", usersAimePas);
+  return Sauce.updateOne(
+    { _id: idSauce },
+    {
+      $set: {
+        dislikes: voteMoins,
+        usersDisliked: usersAimePas,
+      },
+    }
+  );
 }
 
 function saucePipo() {
+  return;
   //  { name: "455_trop_bon cool" },
 
   const tab1 = [];

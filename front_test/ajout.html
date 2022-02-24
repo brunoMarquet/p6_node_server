@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="front6.css" rel="stylesheet" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <h1>HOT TAKES THE WEB'S BEST HOT SAUCE REVIEWS</h1>
+    <nav>
+      <button id="userBt" onclick="editUser()">user</button>
+      <button onclick="logOut()">logOut</button>
+      <button type="submit" onclick="backAllSauce()">All sauces</button>
+      <button type="submit" onclick="ajoutSauce()">Add sauce</button>
+    </nav><br />
+
+    <h2>Ajouter Sauce</h2>
+    <br />
+    <label for="name"><b>name</b></label>
+    <input
+      type="string"
+      placeholder="Enter name"
+      id="name"
+      name="name"
+      required
+      value="piment"
+    /><br />
+    <br />
+    <input type="hidden" id="userId" value="piment" />
+
+    <label for="Manufacturer"><b>Manufacturer</b></label>
+    <input
+      type="string"
+      placeholder="Enter Manufacturer"
+      id="manufacturer"
+      name="Manufacturer"
+      required
+      value="Mazarini"
+    /><br />
+    <br />
+
+    <label for="Description"><b>Description</b></label>
+    <input
+      type="string"
+      placeholder="Enter Description"
+      id="description"
+      name="Description"
+      required
+      value="tomate ail ..."
+    /><br />
+    <br />
+
+    <label for=" mainPepper"><b>Main Pepper Ingredient</b></label>
+    <input
+      type="string"
+      placeholder="Enter mainPepper"
+      id="mainPepper"
+      name="mainPepper"
+      required
+      value="huile"
+    /><br />
+    <br />
+
+    <label for=" Heat"><b>Heat</b></label>
+    <input
+      type="range"
+      min="1"
+      max="10"
+      placeholder="Enter Heat"
+      id="heat"
+      name="Heat"
+      required
+      value="5"
+      onchange="actuHeat(this.value)"
+    /><br />
+    <br />
+    <div id="heatCase">5</div>
+    choissisez une image<input
+      type="file"
+      value="C:\fakepath\logo.png"
+      id="imageUrl"
+      name="imageUrl"
+      accept="image/png,image/gif, image/jpeg"
+    />
+    <br<hr>
+    <button  onclick="ajoutBase()">Ajouter</button>
+    <hr>
+    <button  onclick="ajoutTruc()">TEST</button>
+
+   
+    <h2>spicy sauces</h2>
+
+    <article id="lesSauces2"></article>
+  </body>
+  <script src="main.js"></script>
+  <script src="ajout.js"></script>
+
+ </html>

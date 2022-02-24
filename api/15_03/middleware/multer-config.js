@@ -13,6 +13,8 @@ const storage = multer.diskStorage({
   },
   filename: (req, file, callback) => {
     const name = file.originalname.split(" ").join("_");
+    console.log("file ", file);
+    console.log("multer ", name);
     /**remplacer les espace/tirets
      *
      * let result = text.replaceAll(" ", "_");

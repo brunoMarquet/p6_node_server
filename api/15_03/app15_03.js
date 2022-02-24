@@ -45,7 +45,21 @@ const infoL = (req, res, next) => {
   next();
 };
 
-const router = express.Router();
+//const router = express.Router();
+
+const verif_2 = (req, res, next) => {
+  console.log(new Date());
+  const jwt = require("jsonwebtoken");
+  try {
+    const token = req.headers.authorization.split(" ")[1];
+    // const token = req.headers;
+    console.log("TRUC 2222_______ ", token);
+    next();
+  } catch {
+    console.log("la LOOO....");
+    next();
+  }
+};
 
 const verif = require("./middleware/verif");
 const multer = require("./middleware/multer-config");
@@ -53,14 +67,34 @@ const multer = require("./middleware/multer-config");
 const sauceCtrl = require("./controllers/ctrSauce");
 /*sauces**/
 const pathSauce = "/api/sauces/";
-app.get(pathSauce, infoL, verif, sauceCtrl.infodate, sauceCtrl.getAllSauce);
+app.get(
+  pathSauce,
+  infoL,
+  verif_2,
+  verif,
+  sauceCtrl.infodate,
+  sauceCtrl.getAllSauce
+);
+
 //router.get("/api/sauces/", verif, sauceCtrl.infodate, sauceCtrl.getAllSauce);
-app.get(pathSauce + ":id", verif, sauceCtrl.getOneSauce);
+app.get(pathSauce + ":id", verif_2, verif, sauceCtrl.getOneSauce); //verif viré
 app.post(pathSauce, verif, multer, sauceCtrl.createSauce);
 
 app.put(pathSauce + ":id", verif, multer, sauceCtrl.modifySauce);
 app.delete(pathSauce + ":id", verif, sauceCtrl.deleteSauce);
 app.post(pathSauce + ":id/like", verif, sauceCtrl.aimerSauce);
+
+//sans token
+// http://localhost:3000//api/sauces/test
+app.get("/api/sauces2/", sauceCtrl.getAllSauce);
+//naz
+app.get("/api/sauces2/:id", verif_2, sauceCtrl.getOneSauce);
+app.delete("/api/sauces2/:id", sauceCtrl.deleteSauce);
+app.post("/api/sauces2/:id/like", sauceCtrl.aimerSauce);
+app.post("/api/sauces2", multer, sauceCtrl.createSauce);
+app.put("/api/sauces2/:id", multer, sauceCtrl.modifySauce);
+
+//app.put("/api/truc", verif_2);
 
 /*User**/
 
