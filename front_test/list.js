@@ -6,7 +6,9 @@ function initSauce() {
   const tok = localStorage.getItem("token");
   const userID = localStorage.getItem("userId");
 
-  console.log("Mr ", userID, " ,tt55 ", tok);
+  console.log("userID: ", userID);
+  console.log("tokern  ", tok);
+
   getAllSauces();
 }
 //

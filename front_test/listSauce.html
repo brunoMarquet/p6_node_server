@@ -11,7 +11,7 @@
   <body>
     <h1>HOT TAKES THE WEB'S BEST HOT SAUCE REVIEWS</h1>
     <nav>
-      <button id="userBt" onclick="editUser()">user</button>
+      <!-- <button id="userBt" onclick="editUser()">user</button> -->
       <button onclick="logOut()">logOut</button>
       <button type="submit" onclick="backAllSauce()">All sauces</button>
       <button type="submit" onclick="ajoutSauce()">Add sauce</button>
@@ -23,63 +23,12 @@
     <nav id="menu">log out etc..........</nav>
     <h2>spicy sauces</h2>
     <article id="lesSauces"></article>
-    <article id="lesSauces2"></article>
+    <section id="lesSauces2"></section>
   </body>
   <script src="main.js"></script>
   <script src="list.js"></script>
+  <style></style>
   <!--   https://www.jstoolset.com/jwt 
 import jwt_decode from "jwt-decode"; var token = "eyJ0eXAiO.../// jwt token";var decoded = jwt_decode(token); console.log(decoded); /* prints: * { foo: "bar", *   exp: 1393286893, *   iat: 1393268893  } */ // decode header by passing in options (useful for when you need `kid` to verify a JWT):var decodedHeader = jwt_decode(token, { header: true });console.log(decodedHeader); /* prints: * { typ: "JWT", *   alg: "HS256" } */
 
-<style>
-      body {
-        font-family: Arial, Helvetica, sans-serif;
-      }
-      form {
-        border: 3px solid #f1f1f1;
-      }
-
-      input[type="text"],
-      input[type="password"] {
-        width: 100%;
-        padding: 12px 20px;
-        margin: 8px 0;
-        display: inline-block;
-        border: 1px solid #ccc;
-        box-sizing: border-box;
-      }
-
-      button {
-        background-color: #04aa6d;
-        color: white;
-        padding: 14px 20px;
-        margin: 8px 0;
-        border: none;
-        cursor: pointer;
-        width: 100%;
-      }
-
-      button:hover {
-        opacity: 0.8;
-      }
-
-      .container {
-        padding: 16px;
-      }
-
-      span.psw {
-        float: right;
-        padding-top: 16px;
-      }
-
-      /* Change styles for span and cancel button on extra small screens */
-      @media screen and (max-width: 300px) {
-        span.psw {
-          display: block;
-          float: none;
-        }
-        .cancelbtn {
-          width: 100%;
-        }
-      }
-    </style>
 --></html>

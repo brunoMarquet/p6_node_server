@@ -5,8 +5,6 @@ const mongoose = require("mongoose");
 const path = require("path");
 //app.use(cookieParser());
 
-const helmet = require("helmet");
-
 mongoose
   .connect(
     "mongodb+srv://bruno_me:11!78380b2@cluster0.2bhrr.mongodb.net/piquante?retryWrites=true&w=majority",
@@ -16,7 +14,7 @@ mongoose
   .catch(() => console.log("Connexion à MongoDB échouée !"));
 
 const app = express();
-app.use(helmet());
+//app.use(helmet());
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -30,10 +28,13 @@ app.use((req, res, next) => {
   );
   next();
 });
+//app.use(helmet());
+const helmet = require("helmet");
+app.use(helmet({ crossOriginResourcePolicy: false }));
 
 app.use(express.json());
 
-app.use("/images", express.static(path.join(__dirname, "images")));
+app.use("/images", express.static(path.join(__dirname, "../imagesFolder")));
 /* const sauceRoutes = require("./routes/road");
 const userRoutes = require("./routes/road"); */
 

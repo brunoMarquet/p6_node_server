@@ -1,0 +1,70 @@
+<script>
+  function faireQqc() {
+    return new Promise((successCallback, failureCallback) => {
+      console.log("C'est fait");
+      // réussir une fois sur deux
+      if (Math.random() > 0.5) {
+        successCallback("Réussite 3");
+      } else {
+        failureCallback("Échec 3");
+      }
+    });
+  }
+  function successCallback(résultat) {
+    console.log("L'opération a réussi avec le message : " + résultat);
+  }
+
+  function failureCallback(erreur) {
+    console.error("L'opération a échoué avec le message : " + erreur);
+  }
+
+  //const promise = faireQqc();
+  //promise.then(successCallback, failureCallback);
+
+  //ou
+  faireQqc().then(successCallback, failureCallback);
+
+  /* 
+  function faireQqcALAncienne(successCallback, failureCallback) {
+    console.log("C'est fait");
+    // réussir une fois sur deux
+
+    if (Math.random() > 0.5) {
+      successCallback("Réussite 2");
+    } else {
+      failureCallback("Échec 9 mars");
+    }
+  }
+
+  function successCallback(résultat) {
+    console.log("L'opération a réussi avec le message : " + résultat);
+  }
+
+  function failureCallback(erreur) {
+    console.error("L'opération a échoué avec le message : " + erreur);
+  }
+
+  faireQqcALAncienne(successCallback, failureCallback); */
+  /* 
+  faireQqc()
+    .then(function (result) {
+      return faireAutreChose(result);
+    })
+    .then(function (newResult) {
+      return faireUnTroisiemeTruc(newResult);
+    })
+    .then(function (finalResult) {
+      console.log("Résultat final : " + finalResult);
+    })
+    .catch(failureCallback);
+
+  function faireAutreChose(result) {
+    console.log("faireAutreChosel : " + result);
+  }
+  function faireUnTroisiemeTruc(result) {
+    console.log("faireAutreChose 333 : " + result);
+  }
+  function finalResult(result) {
+    console.log("finalResult 333 : " + result);
+  } */
+</script>

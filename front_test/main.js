@@ -1,4 +1,13 @@
 //document.getElementById("lesSauces").style.display = "none";
+/* var myHeaders = new Headers();
+myHeaders.append("Content-Type", "text/xml");
+myHeaders.append("Vary", "Accept-Language");
+
+// Display the key/value pairs
+for (var pair of myHeaders.entries()) {
+  console.log(pair[0] + ": " + pair[1]);
+} */
+
 function backAllSauce() {
   window.location = "listSauce.html";
 }
@@ -14,27 +23,43 @@ function ajoutSauce() {
   console.log("ajoutSauce...");
   window.location = "ajout.html";
 }
-function jaimePas() {
+function jaimePas(number) {
   let unId = localStorage.getItem("sauceId");
-  console.log("pas");
+  console.log("aime pas" + number);
 }
-function jaime() {
+function jaime(number) {
   let unId = localStorage.getItem("sauceId");
-  console.log("love");
+  console.log("love " + number);
+  //{ userId: String,like: Number }
+  const envoiPost = { userId: String, like: Number };
+  const options = formatReq("POST", envoiPost);
+  //app.post(pathSauce + ":id/like", verif, sauceCtrl.aimerSauce);
+  let url = `http://localhost:3000/api/sauces/${unId}/like`;
+  fetch(url, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${leToken}`,
+    },
+  });
 }
 function effacer() {
   //3000/api/sauces/62013cce8d54cd0e11f0a88d
   let unId = localStorage.getItem("sauceId");
-  unId = "62013cce8d54cd0e11f0a88d";
+  // unId = "62013cce8d54cd0e11f0a88d";
 
-  let url = `http://localhost:3000/api/sauces2/${unId}`;
+  let url = `http://localhost:3000/api/sauces/${unId}`;
   console.log("raz_url:  ", url);
 
-  fetch(url, { method: "DELETE" })
+  fetch(url, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${leToken}`,
+    },
+  })
     .then((res) => res.json())
 
     .then((res) => {
-      alert("ALLO");
+      alert("Delete " + unId);
       console.log(res);
       window.location = "listSauce.html";
     })
@@ -48,7 +73,10 @@ function effacer() {
 }
 function modifier() {
   unId = localStorage.getItem("sauceId");
+  //unId = localStorage.getItem("sauceId");
+
   console.log("modif  ", unId);
+  window.location = "ajout.html?id=" + unId;
   //, unId);
 }
 function actuHeat(nbre) {
@@ -58,105 +86,42 @@ function actuHeat(nbre) {
 function modifSauce() {}
 
 function getAllSauces() {
-  let url = "http://localhost:3000/api/sauces2";
+  let url = "http://localhost:3000/api/sauces";
 
   // const options = formatReq("POST",);
-  // console.log(headers.authorization);
-
-  fetch(url, { method: "GET" })
+  //console.log("header 233333");
+  leToken = localStorage.getItem("token");
+  console.log("getAllSauces _:_ ", leToken);
+  fetch(url, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${leToken}`,
+    },
+  })
     .then((res) => res.json())
 
     .then((res) => {
-      let texte = "la liste ; <hr>";
-      // console.log(res);
-      jpegtemp = "sauce.jpeg";
+      localStorage.removeItem("sauceId");
+      let texte = "";
+
       for (sauce of res) {
         texte +=
-          "<h2>" +
+          "<article class='spicySauce'><a href='sauce.html?id=" +
+          sauce._id +
+          "'><h2>" +
           sauce.name +
           "</h2>by " +
           sauce.manufacturer +
-          "<br>" +
+          " <img src='" +
           sauce.imageUrl +
-          " ; <img src='" +
-          jpegtemp +
-          "'><br>description: " +
+          "'><br>  Description : " +
           sauce.description +
           "<br>hot : " +
           sauce.heat +
-          "/10   <a href='sauce.html?id=" +
-          sauce._id +
-          "'>__le lien___<a /><hr>";
+          "/10  </a></article>";
       }
       // alert(texte);
       document.getElementById("lesSauces2").innerHTML = texte;
-      // const innerRep = document.getElementById("idTestPass");
-    })
-    .catch(function (error) {
-      alert(error);
-    });
-}
-
-/* function getTest(koi) {
-  let url = "http://localhost:3000/api/" + koi;
-  fetch(url, { method: "GET" })
-    .then((res) => res.json())
-
-    .then((res) => {
-      console.log(res);
-    })
-    .catch(function (error) {
-      alert(error);
-    });
-} */
-
-function verifToken(userId, leToken) {
-  /**
-   * pour avoir un post au lieu d'un get et ainsi
-   * avoir une requete(le token)
-   */
-  let url = "http://localhost:3000/api/verifier";
-  const envoiPost = { idUser: userId, token: leToken };
-  const options = formatReq("POST", envoiPost);
-
-  fetch(url, options)
-    .then((res) => res.json())
-
-    .then((res) => {
-      let texte = "";
-      console.log(res);
-      console.log(res.header);
-      for (let index = 0; index < 1 * res.length; index++) {
-        texte += res[index].name + "<br>";
-      }
-      document.getElementById("infoSauces").innerHTML = texte;
-      // const innerRep = document.getElementById("idTestPass");
-    })
-    .catch(function (error) {
-      alert(error);
-    });
-}
-
-function allSauces() {
-  /**
-   * pour avoir un post au lieu d'un get et ainsi
-   * avoir une requete(le token)
-   */
-  let url = "http://localhost:3000/api/saucesTest";
-  const envoiPost = { idUser: leUserId, token: leToken };
-  const options = formatReq("POST", envoiPost);
-
-  fetch(url, options)
-    .then((res) => res.json())
-
-    .then((res) => {
-      let texte = "";
-      console.log(res);
-      console.log(res.header);
-      for (let index = 0; index < 1 * res.length; index++) {
-        texte += res[index].name + "<br>";
-      }
-      document.getElementById("infoSauces").innerHTML = texte;
       // const innerRep = document.getElementById("idTestPass");
     })
     .catch(function (error) {
@@ -227,9 +192,11 @@ function mySignUp() {
   }
 }
 function logExemple(userTxt) {
-  const user = userTxt.split(",@,");
-  //console.log(`hello :  ${user[0]} , pass _:   ${user[1]} `);
-  myLog(user[0], user[1]);
+  if (userTxt !== "") {
+    const user = userTxt.split(",@,");
+    //console.log(`hello :  ${user[0]} , pass _:   ${user[1]} `);
+    myLog(user[0], user[1]);
+  }
 }
 
 function editSauce(res) {
@@ -274,140 +241,3 @@ function afficheUser() {
       });
     });
 }
-/*
-function leLogin(type) {
-  event.preventDefault();
-  // file:///C:/Users/bruno/Documents/p6_2022/my_front/3000/api/auth/login.
-
-  let url = "http://localhost:3000/api/auth/login";
-  if (type == 1) {
-    url = "http://localhost:3000/api/auth/signup";
-  }
-
-  const leMail = document.getElementById("email").value;
-  const lePsw = document.getElementById("psw").value;
-  //console.log(leMail + " : " + lePsw);
-  const envoiPost = { email: leMail, password: lePsw };
-
-  const options = formatReq("POST", envoiPost);
-
-  fetch(url, options)
-    .then((res) => res.json())
-
-    .then((res) => {
-      //console.log("in boucle");
-      console.log(res);
-      //console.log("uuuu"); //res["userId"]);
-      editSauce(res);
-
-        if (userId) {
-        document.getElementById("lesSauces").style.display = "block";
-      } 
-    })
-    .catch(function (error) {
-      alert(error);
-    });
-} function allUser() {
-   fetch(url)
-  let url = "http://localhost:3000/api/auth";
-   fetch(url, { method: "GET" })
- 
-    .then((res) => res.json())
-
-    .then((res) => {
-      console.log(res);
-    })
-    .catch(function (error) {
-      console.log(error);
-    });
-} */
-
-/*  function leTest(){
-        event.preventDefault();
-        const envoiPost = {
-             titi: "tito",
-            email: "truc@free.fr",
-            psw: "1234",};
-
-    const options = {
-    body: JSON.stringify(envoiPost),
-    headers: {
-      "Content-Type": "application/json",
-    },}
-
-     let url="http://localhost:3000/api/auth/leTest";
-    }
-    function testPassword() {
-  event.preventDefault();
-  const valeur = document.getElementById("testPass").value;
-  // console.log(valeur);
-  const url = "http://localhost:3000/api/auth/testPwd";
-  const options = formatReq("POST", { test: valeur });
-  fetch(url, options)
-    .then((res) => res.json())
-
-    .then((res) => {
-      const innerRep = document.getElementById("idTestPass");
-      if (res["testGod"]) {
-        console.log(`votre saisie ${res["testGod"]} est ok`);
-
-        innerRep.innerHTML = `votre saisie ${res["testGod"]} est ok`;
-        innerRep.style.backgroundColor = "green";
-      } else {
-        innerRep.innerHTML = "votre saisie : " + res["testBad"] + " est fausse";
-        innerRep.style.backgroundColor = "red";
-      }
-    })
-    .catch(function (error) {
-      alert(error);
-    });
-    function affichepipo() {
-  const fruits = ["Orange", "Apple", "Mango", "Kiwi"];
-
-  const filterFunction2 = (fruit) => {
-    return fruit !== "Mango";
-  };
-  const filterFunction3 = (fruit) => {
-    if (fruit !== "Mango") {
-      return true;
-    } else {
-      return false;
-    }
-  };
-  const filterFunction = (fruit) => {
-    //console.log(indexOf(fruit));
-    /* if (fruit.findIndex !== 2) {
-      return true;
-    } else {
-      return false;
-    } 
-  };
-
-  const filterFunctionIndex = (fruit) => {
-    return fruit.findIndex !== 2;
-  };
-  const fruitsWithoutMango = fruits.filter(filterFunction);
-  const fruitsWithout_2 = fruits.filter(filterFunctionIndex);
-  /* console.log(
-    "kiwi ",
-    fruits.findIndex((fruit) => fruit === "Kiwi")
-  ); 
-
-  console.log("fruit index", fruitsWithout_2);
-  console.log("fruit : ", fruitsWithoutMango);
-
-  //app.get("/api/pipo/t1
-  let url = "http://localhost:3000/api/pipo/t1";
-  fetch(url, { method: "GET" })
-    .then((res) => res.json())
-
-    .then((res) => {
-      console.log(res);
-      // res.status(200).json(users2);
-      // next();
-    })
-    .catch((error) => {
-      console.log("erreur");
-    });
-}
-} */

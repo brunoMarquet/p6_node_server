@@ -7,6 +7,15 @@ function initAjout() {
   } else {
     logOut();
   }
+  const urlParams = new URLSearchParams(window.location.search);
+  const product_id = urlParams.get("id");
+  if (product_id) {
+    alert("modif");
+  }
+}
+function affichMiniature(image) {
+  console.log(image);
+  document.getElementById("miniature").innerHTML = `<img src='${image.value}'>`;
 }
 
 function ajoutBase() {
@@ -52,6 +61,8 @@ function addSauce() {
   // const options = formatReq("POST", laSauce);
   //const options = formatReq("POST", envoiPost);
   let url = "http://localhost:3000/api/sauces2";
+
+  url = "http://localhost:3000/api/saveImage";
 
   const Unmessage = {
     method: "POST",
