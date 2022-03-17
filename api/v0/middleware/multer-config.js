@@ -11,9 +11,10 @@ const storage = multer.diskStorage({
   destination: (req, file, callback) => {
     callback(null, "imagesFolder");
   },
+
   filename: (req, file, callback) => {
     const name = file.originalname.split(" ").join("_");
-    /**remplacer les espace/tirets
+    /**remplacer les espaces/tirets
      *
      * let result = text.replaceAll(" ", "_");
      *

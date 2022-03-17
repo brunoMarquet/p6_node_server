@@ -1,13 +1,3 @@
-//document.getElementById("lesSauces").style.display = "none";
-/* var myHeaders = new Headers();
-myHeaders.append("Content-Type", "text/xml");
-myHeaders.append("Vary", "Accept-Language");
-
-// Display the key/value pairs
-for (var pair of myHeaders.entries()) {
-  console.log(pair[0] + ": " + pair[1]);
-} */
-
 function backAllSauce() {
   window.location = "listSauce.html";
 }
@@ -21,27 +11,52 @@ function logOut() {
 }
 function ajoutSauce() {
   console.log("ajoutSauce...");
-  window.location = "ajout.html";
+  window.location = "ajout.html?id=0";
 }
-function jaimePas(number) {
-  let unId = localStorage.getItem("sauceId");
-  console.log("aime pas" + number);
+function modifier() {
+  unId = localStorage.getItem("sauceId");
+  //unId = localStorage.getItem("sauceId");
+
+  //console.log("modif  ", unId);
+  window.location = "ajout.html?id=" + unId;
+  //, unId);
 }
+
 function jaime(number) {
   let unId = localStorage.getItem("sauceId");
-  console.log("love " + number);
-  //{ userId: String,like: Number }
-  const envoiPost = { userId: String, like: Number };
-  const options = formatReq("POST", envoiPost);
-  //app.post(pathSauce + ":id/like", verif, sauceCtrl.aimerSauce);
+  let userId = localStorage.getItem("userId");
+  const envoiPost = { userId: userId, like: number };
+  let leToken = localStorage.getItem("token");
+
+  //http://localhost:3000/api/sauces/61f801e4ef1ccf7a58ac2f0e/like
   let url = `http://localhost:3000/api/sauces/${unId}/like`;
+  //console.log("url ", url);
+
   fetch(url, {
     method: "POST",
+    body: JSON.stringify(envoiPost),
     headers: {
+      "Content-Type": "application/json",
       Authorization: `Bearer ${leToken}`,
     },
-  });
+  })
+    .then((res) => res.json())
+
+    .then((res) => {
+      console.log(res);
+      scoreP = res.score[0];
+      scoreN = res.score[1];
+      ilike = res.userVote[0];
+      inolike = res.userVote[1];
+
+      let txtNotes = affichNotes(ilike, inolike, scoreP, scoreN);
+      document.getElementById("scoreSauce").innerHTML = txtNotes;
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
 }
+
 function effacer() {
   //3000/api/sauces/62013cce8d54cd0e11f0a88d
   let unId = localStorage.getItem("sauceId");
@@ -66,31 +81,50 @@ function effacer() {
     .catch(function (error) {
       alert(error);
     });
-
-  //", unId);
-
-  //console.log("url");
 }
-function modifier() {
-  unId = localStorage.getItem("sauceId");
-  //unId = localStorage.getItem("sauceId");
 
-  console.log("modif  ", unId);
-  window.location = "ajout.html?id=" + unId;
-  //, unId);
-}
 function actuHeat(nbre) {
   document.getElementById("heatCase").innerHTML = nbre;
 }
 
 function modifSauce() {}
 
-function getAllSauces() {
+function SauceCreerApi(untruc) {
+  // aa=http://localhost:3000/api/sauces/${unId}
+
+  let leToken = localStorage.getItem("token");
+  const user = localStorage.getItem("userId");
+  let url = "http://localhost:3000/api/saucesBy/" + user;
+  fetch(url, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${leToken}`,
+    },
+  })
+    .then((res) => res.json())
+
+    .then((res) => {
+      let texte = "";
+
+      for (sauce of res) {
+        texte += `<article class='spicySauce'><a href='sauce.html?id=${sauce._id}'><h2>${sauce.name}</h2><p>by ${sauce.manufacturer}
+        <img src='${sauce.imageUrl}'></p> <div class='tt2'> Description : "${sauce.description}<h2>hot : ${sauce.heat}/10 </h2> </div></a></article>`;
+      }
+
+      document.getElementById("lesSauces2").innerHTML = texte;
+    })
+    .catch(function (error) {
+      alert(error);
+    });
+}
+
+function SauceCreer(type) {
+  // by user...
+  //0 => crerr
   let url = "http://localhost:3000/api/sauces";
 
-  // const options = formatReq("POST",);
-  //console.log("header 233333");
-  leToken = localStorage.getItem("token");
+  let leToken = localStorage.getItem("token");
+  const user = localStorage.getItem("userId");
   console.log("getAllSauces _:_ ", leToken);
   fetch(url, {
     method: "GET",
@@ -104,24 +138,59 @@ function getAllSauces() {
       localStorage.removeItem("sauceId");
       let texte = "";
 
+      if (type === "creer") {
+        texte += "sauces crées par...";
+        for (sauce of res) {
+          if (sauce.userId === user) {
+            texte += `<article class='spicySauce'><a href='sauce.html?id=${sauce._id}'><h2>${sauce.name}</h2><p>by ${sauce.manufacturer}
+        <img src='${sauce.imageUrl}'></p> <div class='tt2'> Description : "${sauce.description}<h2>hot : ${sauce.heat}/10 </h2> </div></a></article>`;
+          }
+        }
+      }
+      if (type === "liker") {
+        texte += "sauces likées par...";
+        for (sauce of res) {
+          if (sauce.usersLiked.indexOf(user) !== -1) {
+            texte += `<article class='spicySauce'><a href='sauce.html?id=${sauce._id}'><h2>${sauce.name}</h2><p>by ${sauce.manufacturer}
+                <img src='${sauce.imageUrl}'></p> <div class='tt2'> Description : "${sauce.description}<h2>hot : ${sauce.heat}/10 </h2> </div></a></article>`;
+          }
+        }
+      }
+
+      document.getElementById("lesSauces2").innerHTML = texte;
+    })
+    .catch(function (error) {
+      alert(error);
+    });
+}
+
+function getAllSauces() {
+  let url = "http://localhost:3000/api/sauces";
+
+  let leToken = localStorage.getItem("token");
+  console.log("getAllSauces _:_ ", leToken);
+  fetch(url, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${leToken}`,
+    },
+  })
+    .then((res) => res.json())
+
+    .then((res) => {
+      // afficher
+      localStorage.removeItem("sauceId");
+      let texte = "";
+
       for (sauce of res) {
-        texte +=
-          "<article class='spicySauce'><a href='sauce.html?id=" +
-          sauce._id +
-          "'><h2>" +
-          sauce.name +
-          "</h2>by " +
-          sauce.manufacturer +
-          " <img src='" +
-          sauce.imageUrl +
-          "'><br>  Description : " +
-          sauce.description +
-          "<br>hot : " +
-          sauce.heat +
-          "/10  </a></article>";
+        texte += `<article class='spicySauce'><a href='sauce.html?id=${sauce._id}'><h2>${sauce.name}</h2><p>by ${sauce.manufacturer}
+        <img src='${sauce.imageUrl}'></p> <div class='tt2'> Description : "${sauce.description}<h2>hot : ${sauce.heat}/10 </h2> </div></a></article>
+
+`;
       }
       // alert(texte);
       document.getElementById("lesSauces2").innerHTML = texte;
+      //document.getElementById("userInfo").innerHTML = userID;
       // const innerRep = document.getElementById("idTestPass");
     })
     .catch(function (error) {
@@ -155,10 +224,19 @@ function formatReq(methode, envoiPost) {
 function myLog(mail, psw) {
   // const user = userTxt.split(",@,");
   //console.log(`hello :  ${user[0]} , pass _:   ${user[1]} `);
+  localStorage.setItem("email", mail);
   const envoiPost = { email: mail, password: psw };
   const options = formatReq("POST", envoiPost);
   let url = "http://localhost:3000/api/auth/login";
-  fetch(url, options)
+
+  fetch(url, {
+    method: "POST",
+    body: JSON.stringify(envoiPost),
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer toto_1002`,
+    },
+  })
     .then((res) => res.json())
 
     .then((res) => {
@@ -170,6 +248,7 @@ function myLog(mail, psw) {
       console.log(error);
     });
 }
+
 function mySignUp() {
   event.preventDefault();
   const leMail = document.getElementById("email").value;
@@ -209,35 +288,7 @@ function editSauce(res) {
     window.location = "listSauce.html";
 
     //let url3 = "http://localhost:3000//api/auth/verif";
-
-    document.getElementById("errorHtml").innerHTML =
-      "" + leUserId + "<br>" + leToken;
-    document.getElementById("lesSauces").style.display = "block";
   } else {
     console.log(res.error);
-    document.getElementById("errorHtml").innerHTML = res.error;
-    //?
-    document.getElementById("lesSauces").style.display = "none";
   }
-}
-function afficheUser() {
-  event.preventDefault();
-
-  //console.log("valeur");
-  const url = "http://localhost:3000/api/auth";
-  //const options = formatReq("get", { test: valeur });
-  debugger;
-  fetch(url, { method: "GET" })
-    .then((res) => res.json())
-
-    .then((res) => {
-      let texte = "666666";
-      console.log(res);
-      res.status(200).json(users2);
-    })
-    .catch((error) => {
-      res.status(400).json({
-        error: error,
-      });
-    });
 }

@@ -10,80 +10,93 @@
   </head>
   <body>
     <h1>HOT TAKES THE WEB'S BEST HOT SAUCE REVIEWS</h1>
+
     <nav>
       <button onclick="logOut()">logOut</button>
       <button type="submit" onclick="backAllSauce()">All sauces</button>
-      <button type="submit" onclick="ajoutSauce()">Add sauce</button>
     </nav>
     <br />
 
-    <h2>Ajouter Sauce</h2>
+    <h2><div id="titre">Ajouter TTTTSauce</div></h2>
     <br />
-    <form action="addSauce()" method="post" enctype="multipart/form-data">
-      <label for="name"><b>name</b></label>
-      <input
-        type="string"
-        placeholder="Enter name"
-        id="name"
-        name="name"
-        required
-        value="piment"
-      /><br />
-      <br />
-      <input type="hidden" id="userId" value="piment" />
+    <div id="laSauce"></div>
 
-      <label for="Manufacturer"><b>Manufacturer</b></label>
-      <input
-        type="string"
-        placeholder="Enter Manufacturer"
-        id="manufacturer"
-        name="Manufacturer"
-        required
-        value="Mazarini"
-      /><br />
-      <br />
+    <label for="name"><b>name</b></label>
+    <input
+      type="string"
+      placeholder="Enter name"
+      id="name"
+      name="name"
+      required
+      value="piment"
+    /><br />
 
-      <label for="Description"><b>Description</b></label>
-      <input
-        type="string"
-        placeholder="Enter Description"
-        id="description"
-        name="Description"
-        required
-        value="tomate ail ..."
-      /><br />
-      <br />
+    <br />
+    <input id="userId" value="piment" />
+    type="hidden"
 
-      <label for=" mainPepper"><b>Main Pepper Ingredient</b></label>
-      <input
-        type="string"
-        placeholder="Enter mainPepper"
-        id="mainPepper"
-        name="mainPepper"
-        required
-        value="huile"
-      /><br />
-      <br />
+    <label for="Manufacturer"><b>Manufacturer</b></label>
+    <input
+      type="string"
+      placeholder="Enter Manufacturer"
+      id="manufacturer"
+      name="Manufacturer"
+      required
+      value="Mazarini"
+    /><br />
+    <br />
 
-      <label for=" Heat"><b>Heat</b></label>
-      <input
-        type="range"
-        min="1"
-        max="10"
-        placeholder="Enter Heat"
-        id="heat"
-        name="Heat"
-        required
-        value="5"
-        onchange="actuHeat(this.value)"
-      /><br />
-      <br />
-      <div id="heatCase">5</div>
+    <label for="Description"><b>Description</b></label>
+    <input
+      type="string"
+      placeholder="Enter Description"
+      id="description"
+      name="Description"
+      required
+      value="tomate ail ..."
+    /><br />
+    <br />
 
-      Select image to upload:
-      <input type="file" name="fileToUpload" id="fileToUpload" />
-      <!-- <input type="submit" value="Upload Image" name="submit"> -->
+    <label for=" mainPepper"><b>Main Pepper Ingredient</b></label>
+    <input
+      type="string"
+      placeholder="Enter mainPepper"
+      id="mainPepper"
+      name="mainPepper"
+      required
+      value="huile"
+    /><br />
+    <br />
+
+    <label for=" Heat"><b>Heat</b></label>
+    <input
+      type="range"
+      min="1"
+      max="10"
+      placeholder="Enter Heat"
+      id="heat"
+      name="Heat"
+      required
+      value="5"
+      onchange="actuHeat(this.value)"
+    /><br />
+    <br />
+    <div id="heatCase">5</div>
+    <hr />
+    <div id="bouton11"><button onclick="addSauce()">Modifier</button></div>
+    <hr />
+    <div id="miniature"></div>
+    <form id="formElem">
+      Picture: <input type="file" name="picture" accept="image/*" />
+      <button onclick="addSauce2()">Ajouter Image</button>
+
+      <input type="submit" />
     </form>
+    <hr />
+    <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+    <hr />
+    <hr />
+    <hr />
 
     choissisez une image<input
       type="file"
@@ -91,27 +104,38 @@
       id="imageUrl"
       name="imageUrl"
       accept="image/png,image/gif, image/jpeg"
-      oninput="affichMiniature(this)"
+      oninput=""
     />
     <br />
-    <div id="miniature"></div>
-    <hr />
-    <button onclick="addSauce()">Ajouter</button>
-    <hr />
-    <button onclick="ajoutTruc()">TEST</button>
-
-    <h2>spicy sauces</h2>
-    <!-- Le type d'encodage des données, enctype, DOIT être spécifié comme ce qui suit -->
-    <form enctype="multipart/form-data" action="saveTest2.html" method="post">
-      <!-- MAX_FILE_SIZE doit précéder le champ input de type file -->
-      <input type="hidden" name="MAX_FILE_SIZE" value="30000" />
-      <!-- Le nom de l'élément input détermine le nom dans le tableau $_FILES -->
-      Envoyez ce fichier : <input name="" type="file" />
-      <input type="submit" value="Envoyer le fichier" />
-    </form>
 
     <article id="lesSauces2"></article>
   </body>
+  <script>
+    function addSauce2() {
+      let response = await fetch("http://localhost:3000/api/testPict", {
+        method: "POST",
+        body: new FormData(formElem),
+      });
+
+      let result = await response.json();
+
+      alert(result.message);
+    }
+    /* formElem.onsubmit = async (e) => {
+      e.preventDefault();
+      url = "";
+
+      let response = await fetch("http://localhost:3000/api/testPict", {
+        method: "POST",
+        body: new FormData(formElem),
+      });
+
+      let result = await response.json();
+
+      alert(result.message);
+    }; */
+  </script>
   <script src="main.js"></script>
   <script src="ajout.js"></script>
+  <script></script>
 </html>

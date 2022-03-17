@@ -132,7 +132,7 @@ getAllUser = (req, res, next) => {
     });
 };
 testUser = (req, res, next) => {
-  console.log("truc" + res.locals.testTruc);
+  // console.log("truc" + res.locals.testTruc);
   res.locals.testToken = jwt.sign({ truc2: res.locals.testTruc }, clefToken, {
     expiresIn: "24h",
   });

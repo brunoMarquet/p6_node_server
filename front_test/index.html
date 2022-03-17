@@ -28,7 +28,7 @@
           <option value ="flo@free.fr,@,flo16"> flo@free.fr</option>
           <option value ="anna@free.fr,@,anna20"> anna@free.fr</option>
           <option value="tito@free.fr,@,111">tito@free.fr</option>
-          <option value="tito@free.fr,@,119">tito@free.fr_pass_bidon</option>
+          <option value="tito@free.fr,@,1198888">tito@free.fr_pass_bidon</option>
           <option value="FAUX@free.fr,@,111">un_FAUX@free.fr</option>
 </select>
 <hr />
@@ -50,9 +50,10 @@
         <button type="submit" onclick="preLog()" >se connecter</button>
         <button type="submit" onclick="mySignUp()">s'enregistrer</button>
         <hr />
+        <button type="submit" onclick="testXss()">tester XSS en "front"</button> <div id="idTestPass"></div>
+        <a href="https://www.jstoolset.com/jwt ">site pour decoder token</a>
         
-        <button type="submit" onclick="getAllSauces()">tester sauce</button> <div id="idTestPass"></div>
-        <!-- 
+        <!-- <button type="submit" onclick="getAllSauces()">tester sauce</button> <div id="idTestPass"></div>
     <hr>
       <a href=" http://localhost:3001/images/kanap01.jpeg"> photo kannap_3001</a><br>
       <a href=" http://localhost:3000/images/kanap01.jpeg"> photo kannap_3000___</a><br>
@@ -81,8 +82,8 @@
 <article id="lesSauces2"></article>
     <article id="lesSauces">
     
-      <!-- <button type="submit" onclick="" >ADD SAUCE</button> -->
-      <button type="submit" onclick="allSauces()" >ALL SAUCES version "post"</button>
+      <!--  <button onclick="allSauces()" >ALL SAUCES version "post"</button><button type="submit" onclick="" >ADD SAUCE</button> -->
+     
       <!-- <button type="submit" onclick="getAllSauces()"  >ALL SAUCES version "get"+ token ...</button> -->
       <div id="infoSauces">**********</div>
 
@@ -108,9 +109,22 @@
       height: 80px;
     }
   </style>
-  <script>
+ 
+<script src="https://rawgit.com/leizongmin/js-xss/master/dist/xss.js"></script>
+<script>
+  function testXss(){
+    event.stopPropagation();
+    //let tt1=' let html = filterXSS('<script>alert("xss");</scr' + "ipt>");'
+    let ttXss = filterXSS('<script>alert("xss");</scr' + "ipt>");
+      document.getElementById("logExemple").innerHTML=ttXss
 
-   
+  }
+  // apply function filterXSS in the same way
+  let html = filterXSS('<script>alert("xss");</scr' + "ipt>");
+  //alert(html);
+  //alert('<script>alert("xss");</scr' + "ipt>")
+</script>
+    <script>
   </script>
 <!--   https://www.jstoolset.com/jwt 
 import jwt_decode from "jwt-decode"; var token = "eyJ0eXAiO.../// jwt token";var decoded = jwt_decode(token); console.log(decoded); /* prints: * { foo: "bar", *   exp: 1393286893, *   iat: 1393268893  } */ // decode header by passing in options (useful for when you need `kid` to verify a JWT):var decodedHeader = jwt_decode(token, { header: true });console.log(decodedHeader); /* prints: * { typ: "JWT", *   alg: "HS256" } */

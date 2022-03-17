@@ -1,3 +1,6 @@
+body {
+  background-color: rgb(155, 150, 144);
+}
 button {
   padding: 10px;
   margin: 20px;
@@ -18,8 +21,22 @@ i {
 .fa-thumbs-up {
   color: rgb(27, 87, 25);
 }
+.fa-thumbs-down:hover,
+.far-thumbs-down:hover {
+  color: rgb(241, 10, 10);
+  cursor: pointer;
+}
 .fa-thumbs-down {
   color: rgb(136, 18, 18);
+}
+.fa-thumbs-up:hover,
+.far-thumbs-up:hover {
+  color: rgb(39, 207, 47);
+  cursor: pointer;
+}
+.fas :hover,
+.far :hover {
+  cursor: pointer;
 }
 
 .effacer {
@@ -37,22 +54,38 @@ i {
   text-decoration: none;
 }
 .spicySauce {
-  
   margin: 5px;
-  border: 5px solid #fff;
+  text-align: center;
+
   border-radius: 24px;
-  background: #fff;
+
   width: 170px;
   box-shadow: 3px 3px hsl(0deg 0% 50% / 30%);
   flex: 1;
   min-width: 240px;
   border: 2px solid black;
   border-radius: 8px;
-  background: #dddc7e;
+  background: #8b8b81;
 }
-#lesSauces2{
-  
-    display: flex; 
-    flex-flow: row wrap;/* or inline-flex */
-  }
+#lesSauces2 {
+  display: flex;
+  flex-flow: row wrap; /* or inline-flex */
+}
+i :hover {
+  cursor: pointer;
+}
+a {
+  text-decoration: none;
+}
+h2 {
+  color: black;
+  font-size: 28px;
+}
+h2 + p {
+  color: rgb(170, 8, 35);
+  font-size: 24px;
+}
+.tt2 {
+  color: black;
+  font-size: 22px;
 }

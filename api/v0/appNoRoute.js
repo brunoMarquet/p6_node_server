@@ -49,9 +49,20 @@ const info3 = (req, res, next) => {
 };
 
 //const router = express.Router();
+const truc14 = (req, res, next) => {
+  console.log("body_t14  ", req.body);
+  try {
+    const token = req.headers.authorization.split(" ")[1];
+    console.log("le tokk t14....", token);
+  } catch {
+    console.log("la LOOOse....");
+  }
 
+  //console.log("header ", req.header.Authorization);
+  next();
+};
 const verif_2 = (req, res, next) => {
-  //console.log("verif 2222_____ ");
+  console.log("date ", new Date());
   next();
   /* const jwt = require("jsonwebtoken");
   try {
@@ -70,12 +81,18 @@ const pathSauce = "/api/sauces/";
 app.get(pathSauce, verif, sauceCtrl.getAllSauce);
 
 //router.get("/api/sauces/", verif, sauceCtrl.infodate, sauceCtrl.getAllSauce);
-app.get(pathSauce + ":id", verif_2, verif, sauceCtrl.getOneSauce); //verif viré
+app.get(pathSauce + ":id", verif, sauceCtrl.getOneSauce); //verif viré
 app.post(pathSauce, verif, multer, sauceCtrl.createSauce);
 
 app.put(pathSauce + ":id", verif, multer, sauceCtrl.modifySauce);
 app.delete(pathSauce + ":id", verif, sauceCtrl.deleteSauce);
-app.post(pathSauce + ":id/like", verif, sauceCtrl.aimerSauce);
+app.post(pathSauce + ":id/like", truc14, verif, sauceCtrl.aimerSauce);
+
+// pour le front html
+
+app.put("/api/saucesTest/:id", verif, sauceCtrl.modifySauceLight);
+
+app.get("/api/saucesBy:id", truc14, verif, sauceCtrl.getAllSauceByUser);
 
 const inLocal = (req, res, next) => {
   /**test  */
@@ -86,7 +103,23 @@ const inLocal = (req, res, next) => {
 };
 const userCtrl = require("./controllers/ctrUser");
 const pathUser = "/api/auth/";
-app.post(pathUser + "login", inLocal, userCtrl.testUser, userCtrl.login);
-app.post(pathUser + "signup", inLocal, userCtrl.signup);
+app.post(pathUser + "login", userCtrl.testUser, userCtrl.login);
+app.post(pathUser + "signup", userCtrl.signup);
+
+//************ */
+const truc15 = (req, res, next) => {
+  const file = req.file;
+  // res.sendFile(__dirname + "/index.html");
+  if (!file) {
+    console.log("pas_ok");
+    const error = new Error("Please upload a file");
+    error.httpStatusCode = 400;
+    return next(error);
+  }
+  console.log("ok");
+  res.send(file);
+};
+
+app.post("/api/testPict", truc15);
 
 module.exports = app;

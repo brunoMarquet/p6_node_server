@@ -1,6 +1,6 @@
 const Sauce = require("../models/Sauce");
 const fs = require("fs");
-const xss = require("xss");
+//const xss = require("xss");
 
 function editProp(sauceObject) {
   for (let key in sauceObject) {
@@ -19,7 +19,7 @@ exports.createSauce = (req, res, next) => {
     const sauceObject = JSON.parse(req.body.sauce);
 
     editProp(sauceObject);
-    console.log("_______________");
+
     editProp(req.file);
     console.log("______param_________");
     editProp(req.params);
@@ -64,9 +64,24 @@ exports.createSauce = (req, res, next) => {
   }
 };
 
-exports.infodate = (req, res, next) => {
-  //console.log(" en lecture rs  infodate-- (getAllSauce) : ", res.locals);
-  next();
+exports.getAllSauceByUser = (req, res, next) => {
+  console.log("ok_123");
+  const idUser = req.params.id;
+  if (res.locals.userId) {
+    Sauce.find()
+      .then((sauces) => {
+        let lesSauces = {};
+        for (sauce of sauces) {
+          console.log(sauce.heat);
+        }
+        res.status(200).json(sauces);
+      })
+      .catch((error) => {
+        res.status(400).json({
+          error: error,
+        });
+      });
+  }
 };
 
 exports.getAllSauce = (req, res, next) => {
@@ -106,16 +121,20 @@ exports.getOneSauce = (req, res, next) => {
 };
 
 exports.modifySauce = (req, res, next) => {
-  // je comprends pas
   if (res.locals.userId) {
-    const sauceObject = req.file
-      ? {
-          ...JSON.parse(req.body.sauce),
-          imageUrl: `${req.protocol}://${req.get("host")}/images/${
-            req.file.filename
-          }`,
-        }
-      : { ...req.body };
+    let sauceObject = "";
+    if (req.file) {
+      sauceObject = {
+        ...JSON.parse(req.body.sauce),
+        imageUrl: `${req.protocol}://${req.get("host")}/images/${
+          req.file.filename
+        }`,
+      };
+    } else {
+      sauceObject = { ...req.body };
+    }
+
+    //clone le body
 
     //
     if (req.file) {
@@ -223,32 +242,53 @@ exports.aimerSauce = (req, res, next) => {
         let votePlus = sauce.likes;
         let voteMoins = sauce.dislikes;
 
+        const jaime = usersAime.indexOf(userId);
+        const jaimePas = usersAimePas.indexOf(userId);
+        /**
+         *  userVote: [0, -1],
+         * logque inverse et "debile" ou en confusion du indexOf/-1 dislike
+         * donc -1 on active le "bouton"
+         *
+         */
+
         //const retour = gererNote(laNote, userId, usersAime, usersAimePas);
-        if (laNote == 1) {
+        if (laNote === 1 && jaime === -1) {
           //ajout dans Usersliked et +1 dans likes
           votePlus++;
           usersAime.push(userId);
-          leMessage = "L'utilisateur aime";
+          leMessage = res.locals.mail + "  aime";
           likeActu(idSauce, votePlus, usersAime)
-            .then(() => res.status(200).json({ message: leMessage }))
+            .then(() =>
+              res.status(200).json({
+                message: leMessage,
+                score: [votePlus, voteMoins],
+                userVote: [0, -1],
+              })
+            )
             .catch((error) => res.status(400).json({ error }));
         }
-        if (laNote == -1) {
+        if (laNote === -1 && jaimePas === -1) {
           //ajout dans Usersdisliked et +1 dans dislikes
           voteMoins++;
           usersAimePas.push(userId);
-          leMessage = "L'utilisateur n'aime pas";
-          //console.log("medoum");
+          leMessage = res.locals.mail + "  n'aime pas";
+
           disLikeActu(idSauce, voteMoins, usersAimePas)
-            .then(() => res.status(200).json({ message: leMessage }))
+            .then(() =>
+              res.status(200).json({
+                message: leMessage,
+                score: [votePlus, voteMoins],
+                userVote: [-1, 0],
+              })
+            )
             .catch((error) => res.status(400).json({ error }));
         }
 
-        if (laNote == 0) {
+        if (laNote === 0) {
           // const jaime = usersAime.find((usersId) => usersId == userId);
           // const jaimePas = usersAimePas.find((usersId) => usersId == userId);
-          const jaime = usersAime.indexOf(userId);
-          const jaimePas = usersAimePas.indexOf(userId);
+          //const jaime = usersAime.indexOf(userId);
+          //const jaimePas = usersAimePas.indexOf(userId);
 
           //si dans liked
           // if (jaime) {
@@ -256,9 +296,15 @@ exports.aimerSauce = (req, res, next) => {
             //suppression dans Usersliked et -1 dans likes
             votePlus--;
             usersAime.splice(parseInt(jaime), 1);
-            leMessage = "L'utilisateur n'aime plus";
+            leMessage = res.locals.mail + "  n'aime plus";
             likeActu(idSauce, votePlus, usersAime)
-              .then(() => res.status(200).json({ message: leMessage }))
+              .then(() =>
+                res.status(200).json({
+                  message: leMessage,
+                  score: [votePlus, voteMoins],
+                  userVote: [-1, -1],
+                })
+              )
               .catch((error) => res.status(400).json({ error }));
 
             //si dans disliked
@@ -266,9 +312,15 @@ exports.aimerSauce = (req, res, next) => {
             //suppression dans Usersdisliked et -1 dans dislikes
             voteMoins--;
             usersAimePas.splice(parseInt(jaimePas), 1);
-            leMessage = "L'utilisateur ne déteste plus";
+            leMessage = res.locals.mail + " ne déteste plus";
             disLikeActu(idSauce, voteMoins, usersAimePas)
-              .then(() => res.status(200).json({ message: leMessage }))
+              .then(() =>
+                res.status(200).json({
+                  message: leMessage,
+                  score: [votePlus, voteMoins],
+                  userVote: [-1, -1],
+                })
+              )
               .catch((error) => res.status(400).json({ error }));
           }
         }
@@ -310,11 +362,35 @@ function saveSauce(idSauce, sauce) {
   return Sauce.updateOne({ _id: idSauce }, { ...sauce, _id: idSauce });
 }
 
-///
-/**
- * function verifUser(theId, sauceUser) {
-  if (theId === sauceUser) {
-    return true;
+exports.modifySauceLight = (req, res, next) => {
+  // je comprends pas
+  if (res.locals.userId) {
+    let sauceObject = "";
+
+    sauceObject = { ...req.body };
+
+    const idSauce = req.params.id;
+    trouverSauce(idSauce)
+      .then((sauce) => {
+        if (res.locals.userId === sauce.userId) {
+          //Sauce.updateOne({ _id: idSauce }, { ...sauceObject, _id: idSauce })
+          saveSauce(idSauce, sauceObject)
+            .then(() =>
+              res
+                .status(200)
+                .json({ message: "Objet modifié  par " + res.locals.mail })
+            )
+            .catch((error) => res.status(400).json({ error }));
+        } else {
+          res.status(400).json({ message: "usersId n'a pas les droits !" });
+          console.error("usersId pas ok");
+        }
+      })
+      .catch((error) => res.status(500).json({ error }));
   }
-}
- */
+};
+
+exports.infodate = (req, res, next) => {
+  //console.log(" en lecture rs  infodate-- (getAllSauce) : ", res.locals);
+  next();
+};

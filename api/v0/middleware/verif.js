@@ -7,8 +7,6 @@ module.exports = (req, res, next) => {
     const userId = decodedToken.userId;
     const userMail = decodedToken.userMail;
 
-    const mail = res.locals.email;
-
     res.locals.date = Date.now();
     res.locals.userId = userId;
     res.locals.mail = userMail;
@@ -19,12 +17,3 @@ module.exports = (req, res, next) => {
     });
   }
 };
-
-/*
-function editProp(sauceObject) {
-  for (let key in sauceObject) {
-    if (sauceObject.hasOwnProperty(key)) {
-      console.log(key + " : " + sauceObject[key]);
-    }
-  }
-} */
